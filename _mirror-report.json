@@ -1,0 +1,48 @@
+{
+  "start": "https://wavedash.com/games/blood-slayers",
+  "origin": "https://wavedash.com",
+  "gated": false,
+  "sessionRenewal": "per-page-load playKey (server-rendered on the game page) -> embed shell -> ~1 h gameplay JWT (Authorization: Bearer) for every build-host request; minted fresh by tools/update.mjs / tools/capture.mjs",
+  "gameHost": "https://mx74mmkghvsq6thc1e56jtkkb18ft2yc-<fnv32(userId)>-<fnv32(gameBuildId)>.builds.wavedashcdn.com (per-user, per-build host; the capture was taken on the anonymous-user host d63d8679-0a5301b2, files verified byte-identical via the logged-in host abc3e19d-0a5301b2 and re-probed 2026-10-13: 414/414 identical)",
+  "requests": 414,
+  "fetched": 414,
+  "bytes": 255812894,
+  "paths": [
+    "index.html",
+    "olbaid.js",
+    "olbaid_bg.wasm",
+    "embed",
+    "embed.js",
+    "embed.css",
+    "sw-embed.js",
+    "snippets/olbaid-abdb8433e54eccc9/inline0.js",
+    "snippets/olbaid-abdb8433e54eccc9/web/olbaid_net.js",
+    "snippets/olbaid-abdb8433e54eccc9/web/olbaid_save.js",
+    "assets/ (models/{env,characters,gear,items}, icons/, ui/, audio/{,music,voice}, fonts/, shaders/)"
+  ],
+  "unresolved": [],
+  "unreachable": [
+    { "status": 404, "path": "favicon.ico", "probes": 1, "note": "declared by browsers only; the build ships no icon" },
+    { "status": 404, "path": "mock-wavedash.js", "probes": 1, "note": "referenced by index.html's ?mock=1 local-testing branch; not uploaded to the build (branch inert unless the query param is set)" },
+    { "status": 404, "path": "assets/models/env/{catacomb,cathedral,cavern,hellforge,sunken}_wall_c.glb", "probes": 5, "note": "the _wall_c variant exists only for drowned/thorn/foundry/abyss (four 404s recorded; drowned/thorn/foundry/abyss _wall_c captured)" },
+    { "status": 404, "path": "assets/models/gear/hero/{staff_*,helm_cowl,helm_circlet,chest_mantle}.glb", "probes": 7, "note": "sorcerer-only looks; hero bodies ship the weapon/armour looks only" },
+    { "status": 404, "path": "assets/models/gear/sorcerer/{sword_*,axe_*,mace_*}.glb", "probes": 8, "note": "barbarian-only weapon looks; the sorcerer body ships staves instead" },
+    { "status": 404, "path": "assets/audio/{intro_theme,ending_theme,cutscene_theme,music_village}.wav", "probes": 4, "note": "these tracks are .mp3 — the .wav cross-product probes are absent by design" },
+    { "status": 404, "path": "assets/audio/music/the_pit_c.mp3", "probes": 1, "note": "the litany name table lists demons_lair_a/b/c + the_pit_a/b (no _c)" },
+    { "status": 404, "path": "auth/refresh", "probes": 1, "note": "SW-internal POST endpoint (`/auth/refresh`, POST only) — GET is not routed" },
+    { "status": 404, "path": "build-manifest.json / manifest.json / files.json / asset-manifest.json", "probes": 4, "note": "no build file listing is served on the CDN host; the closure was network-log-led plus the wasm-embedded name tables" }
+  ],
+  "external": [
+    { "host": "convex-api.wavedash.com", "kind": "backend", "note": "Convex realtime backend for platform SDK state (rosters/cloud saves/lobbies) — dynamic endpoints, never captured" },
+    { "host": "uploads.wavedash.com / ugc.wavedashcdn.com", "kind": "platform storage", "note": "UGC/screenshot upload + userfs cloud saves — runtime-only endpoints" },
+    { "host": "o4510067032457216.ingest.us.sentry.io", "kind": "telemetry", "note": "SDK error reporting — runtime-only endpoint" },
+    { "host": "accounts.google.com", "kind": "auth", "note": "Google sign-in iframe on the platform page — platform chrome, outside the game closure" }
+  ],
+  "notes": [
+    "platform page (wavedash.com/games/blood-slayers) = SvelteKit shell + GamePlayer; the game itself runs on the per-build builds.wavedashcdn.com host inside an iframe whose src carries the playKey + sdkconfig",
+    "the build host requires auth: without the JWT every path 401s (except embed.js/embed.css/sw-embed.js, which are public)",
+    "the embed document replaces its own body with index.html (document.write-style boot) and sw-embed.js authorizes every subsequent fetch",
+    "build metadata at capture (2026-10-13): gameBuild mn71ja9zvk097ga9sp8jq92s6n8g3eg4, buildNumber 20, v1.1.1, engine CUSTOM, entrypoint index.html, buildSizeBytes 347715998; captured closure 255812894 bytes (the delta is upload-side build metadata/artifacts not reachable by any runtime request — probed exhaustively via the runtime network log and the wasm-embedded name tables)",
+    "network logs: docs/network-log-2026-10-13.jsonl (browser session + runtime fetch record)"
+  ]
+}
