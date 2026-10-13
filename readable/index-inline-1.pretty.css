@@ -1,0 +1,106 @@
+/* The canvas always fills the window; the game letterboxes itself to a 16:9 or 21:9 stage
+       inside it (black bars drawn by the engine), so the page around it is black too. */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#game {
+  position: fixed;
+  inset: 0;
+  background: #000;
+}
+#olbaid-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  touch-action: none;
+  background: #000;
+}
+#rotate {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(3, 3, 4, 0.92);
+  color: #d9c49a;
+  font-family: Georgia, serif;
+  letter-spacing: 0.1em;
+  z-index: 20;
+  text-align: center;
+  padding: 24px;
+}
+#rotate .icon {
+  font-size: 54px;
+  animation: tilt 2.2s ease-in-out infinite;
+}
+@keyframes tilt {
+  0%,
+  30% {
+    transform: rotate(0deg);
+  }
+  60%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+@media (orientation: portrait) and (pointer: coarse) {
+  #rotate.on {
+    display: flex;
+  }
+}
+#loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: radial-gradient(ellipse at center, #1a0d08 0%, #030304 70%);
+  font-family: Georgia, "Times New Roman", serif;
+  color: #d9c49a;
+  letter-spacing: 0.12em;
+  z-index: 10;
+  transition: opacity 0.6s ease;
+}
+#loader h1 {
+  margin: 0;
+  font-size: clamp(34px, 8vw, 64px);
+  text-align: center;
+  color: #b81b10;
+  text-shadow:
+    0 4px 0 #000,
+    0 0 24px #5a0a05;
+}
+#bar {
+  width: min(420px, 70vw);
+  height: 6px;
+  background: #120a07;
+  border: 1px solid #5c4526;
+}
+#fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #8a5a1c, #e0b45a);
+  transition: width 0.2s;
+}
+#msg {
+  font-size: 14px;
+  color: #8c7b62;
+  max-width: 560px;
+  text-align: center;
+  line-height: 1.6;
+}

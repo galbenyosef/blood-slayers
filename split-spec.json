@@ -1,0 +1,3176 @@
+{
+  "project": "blood-slayers",
+  "kind": "statement-aligned-slices",
+  "defaultFile": "src/olbaid-01.js",
+  "importWhitelist": [
+    {
+      "spec": "./mock-wavedash.js",
+      "in": "readable/index-inline-2.pretty.js",
+      "reason": "index.html's local-testing branch (?mock=1) dynamically imports ./mock-wavedash.js — the file is NOT in the uploaded build (probed 404 on the CDN host), so the mirror cannot carry it; the branch is inert unless the query param is set. Recorded gap, whitelisted from the import-resolution rule."
+    }
+  ],
+  "note": "BLOOD SLAYERS (https://wavedash.com/games/blood-slayers) is capture-class: a WebGPU game on the Wavedash platform, served by a per-build CDN host (mx74mmkghvsq6thc1e56jtkkb18ft2yc-<user-hash>-<build-hash>.builds.wavedashcdn.com) behind a platform session (playKey → embed → gameplay JWT). §0.4 fork-over-mirror was checked on 2026-10-13 — the project publishes no source repository, so the mirror stands. Derived pipeline: capture → pinned prettier 3.9.6 (module API, default options, single pass verified idempotent — never the CLI: it respects .gitignore and can silently echo its input) → readable/<tag>.pretty.js|css per captured JS/CSS file (repo-root-relative, dirs flattened with __; every pretty provably NOT byte-identical to its capture source) → statement-aligned slices src/<tag>-NN.js of the app-side JS (olbaid.js wasm-bindgen glue, the three snippets/ shims, and the inline scripts of index.html/embed) at top-level declaration boundaries, ~250-350 line windows (oversized single declarations stay whole) with an exact 2-line provenance header. Every slice parses standalone under `node --input-type=module --check -` and round-trips byte-exact to its recorded readable line range. Vendor rule — wholeFile sections, never sliced: embed.js (the Wavedash platform SDK) and sw-embed.js (its embed service worker) are third-party platform runtime; machinery/stylesheet rule — embed.css is wholeFile. Non-standalone parts are skipped sections: a final pure export {…} table, if present. Payload rule (engine-build precedent): olbaid_bg.wasm and every file under assets/** are recorded in notRendered with size + sha256 — never prettified, re-encoded or otherwise rewritten; a naive static server serves them raw and byte-exact. Identifiers in src/ are the wasm-bindgen glue's own names — the identifier-rename campaign (PLAN §5) is recorded as an open task in README.md, not claimed here. Capture bytes are untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. `node tools/audit.js` is the gate.",
+  "renderOptions": {
+    "_default": "prettier 3.9.6, module API, default options, single pass (re-format verified idempotent at derive time) — never the CLI: it respects .gitignore and can silently echo its input",
+    "js": "parser babel, no plugins",
+    "css": "parser css, no plugins"
+  },
+  "source": "readable/: 9 JS pretties (4 app/shim file(s) sliced, 2 vendor wholeFile) + 2 CSS pretties + 4 inline twin(s); src/: 9 statement-aligned slices across 4 file(s); 1 skipped section(s); 4 wholeFile section(s); capture: 414 files under .upstream/manifest.json (405 payload(s) notRendered); inline scan: embed, index.html (4 inline content block(s)).",
+  "inline": {
+    "scanned": [
+      "embed",
+      "index.html"
+    ],
+    "contentBlocks": 4,
+    "notRendered": 0,
+    "note": "inline <script> blocks of index.html (gesture/audio shim + WebGPU boot module) and embed (__WAVEDASH_GAME__ config) are twin-pretty'd; the config block is JS, not typed data."
+  },
+  "sources": [
+    {
+      "sourceFile": "readable/olbaid.pretty.js",
+      "capture": "olbaid.js",
+      "captureKind": "file",
+      "captureSha256": "068600112ed0f8189484bf2d8c5d8d36ea332fef046fbe9212e13b27fce4aa07",
+      "captureBytes": 184262,
+      "prettyLines": 5971,
+      "prettyBytes": 184944,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "olbaid",
+      "slices": 5,
+      "derived": "readable + 5 statement-aligned slice(s) + 1 skipped section(s)"
+    },
+    {
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__inline0.pretty.js",
+      "capture": "snippets/olbaid-abdb8433e54eccc9/inline0.js",
+      "captureKind": "file",
+      "captureSha256": "6e7fee413a049170216b5a0ceec2753793447936ad9712834960a4c13afd35af",
+      "captureBytes": 1509,
+      "prettyLines": 58,
+      "prettyBytes": 1415,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "snippets__olbaid-abdb8433e54eccc9__inline0",
+      "slices": 1,
+      "derived": "readable + 1 statement-aligned slice(s)"
+    },
+    {
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__web__olbaid_net.pretty.js",
+      "capture": "snippets/olbaid-abdb8433e54eccc9/web/olbaid_net.js",
+      "captureKind": "file",
+      "captureSha256": "f1940ca27c9c33166b5ea3ab81731b5b060bf3e163e0b3fd7a026723662f2eae",
+      "captureBytes": 12946,
+      "prettyLines": 494,
+      "prettyBytes": 13809,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_net",
+      "slices": 2,
+      "derived": "readable + 2 statement-aligned slice(s)"
+    },
+    {
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__web__olbaid_save.pretty.js",
+      "capture": "snippets/olbaid-abdb8433e54eccc9/web/olbaid_save.js",
+      "captureKind": "file",
+      "captureSha256": "0a5578d0f5cb1491a5a7fe843273e74e6270e6cf1c54b37caabf53b2b0be9bf6",
+      "captureBytes": 3328,
+      "prettyLines": 122,
+      "prettyBytes": 3408,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_save",
+      "slices": 1,
+      "derived": "readable + 1 statement-aligned slice(s)"
+    },
+    {
+      "sourceFile": "readable/embed.pretty.js",
+      "capture": "embed.js",
+      "captureKind": "file",
+      "captureSha256": "0c3bd2aadac43a34b93f7b6b7ada0229f5a14b4dc2b4b3b5d3a49c3801dcee83",
+      "captureBytes": 732728,
+      "prettyLines": 23054,
+      "prettyBytes": 751778,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "embed",
+      "slices": 0,
+      "derived": "readable only (vendor bundle, wholeFile)",
+      "what": "Wavedash platform SDK"
+    },
+    {
+      "sourceFile": "readable/sw-embed.pretty.js",
+      "capture": "sw-embed.js",
+      "captureKind": "file",
+      "captureSha256": "c1eccb55a9af77957b44cbf49b0f68bff6fcacdb2de617ec9a85b33237121698",
+      "captureBytes": 30200,
+      "prettyLines": 1828,
+      "prettyBytes": 56753,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "sw-embed",
+      "slices": 0,
+      "derived": "readable only (vendor bundle, wholeFile)",
+      "what": "Wavedash embed service worker"
+    },
+    {
+      "sourceFile": "readable/embed.pretty.css",
+      "capture": "embed.css",
+      "captureKind": "file",
+      "captureSha256": "ab8c6ec5254b739d6b9270dbc3a79aacbcf56a5f353c2885ce5e870daf35d915",
+      "captureBytes": 9831,
+      "prettyLines": 636,
+      "prettyBytes": 10091,
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "embed",
+      "slices": 0,
+      "derived": "readable only (stylesheet, wholeFile)"
+    },
+    {
+      "sourceFile": "readable/embed-inline-1.pretty.js",
+      "capture": "embed",
+      "captureKind": "inline-script",
+      "captureByteStart": 201,
+      "captureByteEnd": 1363,
+      "captureSha256": "b45167d01e0ac2de48abdefd41b6f7da3ecb63e03f574a2263efce31e6577d8a",
+      "captureBytes": 1162,
+      "prettyLines": 7,
+      "prettyBytes": 1180,
+      "prettySha256": "df90ed5eff63d7c956933088dbe5f9b2358cdded9f61611c5ff399539fb4ab6f",
+      "tag": "embed-inline-1",
+      "slices": 0,
+      "derived": "readable only (inline block, wholeFile)"
+    },
+    {
+      "sourceFile": "readable/index-inline-1.pretty.css",
+      "capture": "index.html",
+      "captureKind": "inline-style",
+      "captureByteStart": 399,
+      "captureByteEnd": 2417,
+      "captureSha256": "e8b620b7f98de05be1e05fe3f228769cdc236467a1e4f7abe1971a3730cedc84",
+      "captureBytes": 2018,
+      "prettyLines": 106,
+      "prettyBytes": 2094,
+      "prettySha256": "06f2baaeaf4a2f061aba954d1c26bef2036b268bbed31ab3227d3be2fee1c8e6",
+      "tag": "index-inline-1",
+      "slices": 0,
+      "derived": "readable only (inline block, wholeFile)"
+    },
+    {
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "capture": "index.html",
+      "captureKind": "inline-script",
+      "captureByteStart": 2854,
+      "captureByteEnd": 3977,
+      "captureSha256": "383514ffebb04a854ed4839ff604f4bde429a497f3bf1da41fa6ee5a555b9469",
+      "captureBytes": 1123,
+      "prettyLines": 29,
+      "prettyBytes": 1096,
+      "prettySha256": "01ec490db3b27d86108af747508b597cf66cd19a050b8c51b1efc669ba3f953b",
+      "tag": "index-inline-1",
+      "slices": 0,
+      "derived": "readable only (inline block, wholeFile)"
+    },
+    {
+      "sourceFile": "readable/index-inline-2.pretty.js",
+      "capture": "index.html",
+      "captureKind": "inline-script",
+      "captureByteStart": 4011,
+      "captureByteEnd": 5624,
+      "captureSha256": "4167bbfd07a26ebc559cf707050e81b8e8d8137e21b2f2ec64155dc0481f85c2",
+      "captureBytes": 1613,
+      "prettyLines": 42,
+      "prettyBytes": 1492,
+      "prettySha256": "9c42d6f3450307d09474b76036308d46057910d8c8f4c82756abca20c4b1ea1a",
+      "tag": "index-inline-2",
+      "slices": 0,
+      "derived": "readable only (inline block, wholeFile)"
+    }
+  ],
+  "sections": [
+    {
+      "file": "olbaid-01.js",
+      "title": "olbaid 01 — the",
+      "desc": "Lines 1-200. Markers: the(28), being(16).",
+      "startLine": 1,
+      "endLine": 200,
+      "sourceFile": "readable/olbaid.pretty.js"
+    },
+    {
+      "file": "olbaid-02.js",
+      "title": "olbaid 02 — arg0",
+      "desc": "Oversized single declaration (kept whole). Lines 201-5109. Markers: arg0(1652), arg1(1207).",
+      "startLine": 201,
+      "endLine": 5109,
+      "sourceFile": "readable/olbaid.pretty.js"
+    },
+    {
+      "file": "olbaid-03.js",
+      "title": "olbaid 03 — arg0",
+      "desc": "Lines 5110-5420. Markers: arg0(26), arg1(26).",
+      "startLine": 5110,
+      "endLine": 5420,
+      "sourceFile": "readable/olbaid.pretty.js"
+    },
+    {
+      "file": "olbaid-04.js",
+      "title": "olbaid 04 — ptr",
+      "desc": "Lines 5421-5767. Markers: ptr(47), len(18).",
+      "startLine": 5421,
+      "endLine": 5767,
+      "sourceFile": "readable/olbaid.pretty.js"
+    },
+    {
+      "file": "olbaid-05.js",
+      "title": "olbaid 05 — ptr",
+      "desc": "Lines 5768-5970. Markers: ptr(16), instance(13).",
+      "startLine": 5768,
+      "endLine": 5970,
+      "sourceFile": "readable/olbaid.pretty.js"
+    },
+    {
+      "file": "olbaid-tail-export.js",
+      "skipped": true,
+      "title": "olbaid — final export table (not sliced)",
+      "desc": "Lines 5971-5971. The module's final export {…} table — the exported bindings live in the earlier slices; a standalone tail carries no new statements, so it is indexed only.",
+      "startLine": 5971,
+      "endLine": 5971,
+      "sourceFile": "readable/olbaid.pretty.js",
+      "firstLine": "export { initSync, __wbg_init as default };",
+      "lastLine": "export { initSync, __wbg_init as default };"
+    },
+    {
+      "file": "snippets__olbaid-abdb8433e54eccc9__inline0-01.js",
+      "title": "snippets__olbaid-abdb8433e54eccc9__inline0 01 — wavedash",
+      "desc": "Lines 1-58. Markers: wavedash(9), export(8).",
+      "startLine": 1,
+      "endLine": 58,
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__inline0.pretty.js"
+    },
+    {
+      "file": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_net-01.js",
+      "title": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_net 01 — lobbyid",
+      "desc": "Lines 1-349. Markers: lobbyid(29), push(18).",
+      "startLine": 1,
+      "endLine": 349,
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__web__olbaid_net.pretty.js"
+    },
+    {
+      "file": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_net-02.js",
+      "title": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_net 02 — lobbyid",
+      "desc": "Lines 350-494. Markers: lobbyid(11), export(10).",
+      "startLine": 350,
+      "endLine": 494,
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__web__olbaid_net.pretty.js"
+    },
+    {
+      "file": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_save-01.js",
+      "title": "snippets__olbaid-abdb8433e54eccc9__web__olbaid_save 01 — json",
+      "desc": "Lines 1-122. Markers: json(11), pending(9).",
+      "startLine": 1,
+      "endLine": 122,
+      "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__web__olbaid_save.pretty.js"
+    },
+    {
+      "file": "embed-vendor.js",
+      "wholeFile": true,
+      "title": "embed — Wavedash platform SDK (vendor runtime, whole-file, never sliced)",
+      "desc": "Lines 1-23054 of readable/embed.pretty.js: The Wavedash platform SDK that the embed shell loads: iframe/parent messaging, lobby + P2P matchmaking bridge, Convex client wiring, cloud-save (userfs) and UGC managers, audio routing, progress reporting. Third-party platform runtime, not game code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
+      "note": "whole-file (vendor/stylesheet rule): indexed in readable/, never sliced",
+      "startLine": 1,
+      "endLine": 23054,
+      "sourceFile": "readable/embed.pretty.js"
+    },
+    {
+      "file": "sw-embed-vendor.js",
+      "wholeFile": true,
+      "title": "sw-embed — Wavedash embed service worker (vendor, whole-file, never sliced)",
+      "desc": "Lines 1-1828 of readable/sw-embed.pretty.js: The service worker the embed shell registers at the build-host origin scope: it attaches the gameplay-JWT Authorization header to every build-file request, handles POST /auth/refresh, and caches immutable build files (build-file-cache). Platform machinery — indexed whole-file in readable/, never sliced or rewritten.",
+      "note": "whole-file (vendor/stylesheet rule): indexed in readable/, never sliced",
+      "startLine": 1,
+      "endLine": 1828,
+      "sourceFile": "readable/sw-embed.pretty.js"
+    },
+    {
+      "file": "embed-stylesheet.css",
+      "wholeFile": true,
+      "title": "embed — stylesheet (whole-file, never sliced)",
+      "desc": "Lines 1-636 of readable/embed.pretty.css. Whole-file (stylesheet rule): the capture stylesheet is indexed whole in readable/, never sliced.",
+      "note": "whole-file (vendor/stylesheet rule): indexed in readable/, never sliced",
+      "startLine": 1,
+      "endLine": 636,
+      "sourceFile": "readable/embed.pretty.css"
+    },
+    {
+      "file": "embed-inline-1-01.js",
+      "title": "embed-inline-1 01 — gameplayjwt",
+      "desc": "Lines 1-7. Markers: gameplayjwt(1), gbid(1).",
+      "startLine": 1,
+      "endLine": 7,
+      "sourceFile": "readable/embed-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1.css",
+      "wholeFile": true,
+      "title": "index-inline-1 — inline style block (whole-file, never sliced)",
+      "desc": "Lines 1-106 of readable/index-inline-1.pretty.css. Whole-file: the document's inline style block (2018 B at bytes 399-2417 of index.html) is indexed whole and never sliced.",
+      "note": "whole-file (inline style block, not sliced)",
+      "startLine": 1,
+      "endLine": 106,
+      "sourceFile": "readable/index-inline-1.pretty.css"
+    },
+    {
+      "file": "index-inline-1-01.js",
+      "title": "index-inline-1 01 — addeventlistener",
+      "desc": "Lines 1-29. Markers: addeventlistener(4), patched(4).",
+      "startLine": 1,
+      "endLine": 29,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-2-01.js",
+      "title": "index-inline-2 01 — the",
+      "desc": "Lines 1-42. Markers: the(5), getelementbyid(4).",
+      "startLine": 1,
+      "endLine": 42,
+      "sourceFile": "readable/index-inline-2.pretty.js"
+    }
+  ],
+  "notRendered": [
+    {
+      "capture": "assets/audio/ambient_loop.wav",
+      "bytes": 1764044,
+      "sha256": "c079db4c7c7a4b47cb7b678fbdda2a6b7445bb767aec5a12931c9227a87ffc97",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/arrow_hit.wav",
+      "bytes": 44144,
+      "sha256": "fc315e517ac2ca4982a2be2b85f2736355b1905f6671d63103b093b9820ebd01",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/arrow_shoot.wav",
+      "bytes": 24558,
+      "sha256": "68a536468535b108528b175b2a8aa9490700682a115a988ab8cb0ac05882d4d0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/bell_toll.wav",
+      "bytes": 554562,
+      "sha256": "e688c04f56c21f5b50553339d694480108ea6a2230237e0506295235a9d73c9b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/blink.wav",
+      "bytes": 44144,
+      "sha256": "450591c34f27496ac7056696c4d0fb0ae6a457319547b41262af9ea2080cf3a5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/bone_break.wav",
+      "bytes": 137246,
+      "sha256": "a6fe00f992d1045b0513365d1c9fe2ad640f35bc95d3da21eda00be784965ba1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/boss_roar.wav",
+      "bytes": 344024,
+      "sha256": "59b09d43eb74e8a55e16b4d3e0038ac25e378722c9c6b1b97bfbaacb47b434b2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/boss_slam.wav",
+      "bytes": 282284,
+      "sha256": "75244512101da6f90882dab02c51b5617fba4aa3bd5e14331b657fcd20db1258",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/chest_open.wav",
+      "bytes": 176444,
+      "sha256": "caa9c5628775de41a9d8a89c27be3ede21cba6818764ffba949461a3bde5ca7f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/choir_hum.wav",
+      "bytes": 926144,
+      "sha256": "99ce88422b38d2e06e565e6fdd1a1cb9f06c1401fc6b365019e4bc676b6391b6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/cutscene_theme.mp3",
+      "bytes": 287943,
+      "sha256": "d91384dfcd4bae19e32f3ffe47100d0bba0b1a3bb0c22f87fc7ab98837f92bdd",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/ember_hit.wav",
+      "bytes": 70604,
+      "sha256": "bf16e3307aef059c2405a51cd614e4939ea6aeafd45ba3cf6d4be75802931c1f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/ember_throw.wav",
+      "bytes": 61784,
+      "sha256": "a5cde59a94d7fb66bd12d61b11c4b5f0c9576d893d25a54078273cc61acfc074",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/ending_theme.mp3",
+      "bytes": 830931,
+      "sha256": "8861d7813032b0562f30f25c55112133666f42301a3910754d8dca535ab56a7f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/fireball_cast.wav",
+      "bytes": 52964,
+      "sha256": "c17ba1ed52885a95bdc52a28dbf3d4bdb6aa35ab22d10d493badc93a0c5aa7d5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/fireball_explode.wav",
+      "bytes": 167624,
+      "sha256": "7eece6d16303c383773084fb8a1b0f2e323bfc5c0168ed5669560e79ac20c395",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/footstep_1.wav",
+      "bytes": 20696,
+      "sha256": "28c5bb0758749ce1cea05a666296e5659d5ae7cf13ebfb375997ec6ad8afd976",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/footstep_2.wav",
+      "bytes": 19906,
+      "sha256": "b127c674cda4a71475ba87669cfb2262ddf9b37466f698d2ab5d23e55aadc33a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/footstep_3.wav",
+      "bytes": 20118,
+      "sha256": "f6b29e81321468bf4ae5f4bee36bb0b84a6ec83afdbc57df79df22c646690544",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/footstep_4.wav",
+      "bytes": 19932,
+      "sha256": "decc7374feb3fac6de8c341c3d7e919dc9a91f3fea8ae6887939ab3c006614b8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/forge_hammer.wav",
+      "bytes": 705644,
+      "sha256": "99c5bf8e8a4df8e9d7989c6cea32608b97972eb53d7606d5da9e6e96bb26304f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/frost_nova.wav",
+      "bytes": 141164,
+      "sha256": "5c37dda708c3308787870188b17e402fcc127d3aab3242a49df9d7b7de9c2cf7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/gate_open.wav",
+      "bytes": 277874,
+      "sha256": "1b487be7f658bcaae7e2d4ad6068f7c8ba8739785a93c8aab19ba9a22b0833db",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/ghoul_screech.wav",
+      "bytes": 114704,
+      "sha256": "d4bf745af2ea9dc9b59fd9da5abe8ec5f50088417c4a7290635589114aafbeb2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/gold_pickup.wav",
+      "bytes": 72352,
+      "sha256": "97399593648a7d7d08ac37154c67ed9f18c89ece318c8ff25b14bc34ff83b3c2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hit_bone_1.wav",
+      "bytes": 26132,
+      "sha256": "17cb97d0daa2ae2c833f004b4217ae630ffd0da15aea7a16537284c2db180b66",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hit_bone_2.wav",
+      "bytes": 27754,
+      "sha256": "141a7bd2736aa6c9c496358e87761b522b78032d10ad07b909b552564bf89769",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hit_bone_3.wav",
+      "bytes": 19848,
+      "sha256": "1d85580fffabc994609f699b503936ae4b091843995021f5b9f41414ceaec93d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hit_flesh_1.wav",
+      "bytes": 31206,
+      "sha256": "d75c9d53a958d46923d3ce7ac6dd840ede51fd5b0293ba362763b0264d21fe42",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hit_flesh_2.wav",
+      "bytes": 31064,
+      "sha256": "2e5a9f9e7011169ce6d2d9d81e9853d242eb8c5d5bb8e7aa3cb77a7ab827622a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hit_flesh_3.wav",
+      "bytes": 31358,
+      "sha256": "ec75c69ab259c6f7233bd094c52da1fba8659c76c7e50e615526090e71d5fa46",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hymn_bolt.wav",
+      "bytes": 132344,
+      "sha256": "afc236bc94d97bb97fced4e789ca482f6cd5f8a646de1a652f28f9a17f530ad5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/hymn_hit.wav",
+      "bytes": 97064,
+      "sha256": "e1b3051367cd98a86092583cc95596b6b07bf1769aacd3897705a23f45ef2ddc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/intro_theme.mp3",
+      "bytes": 679488,
+      "sha256": "2b63dd03974756f851598a670aa6810389908d02f1f6eda8f577a6b8ea1b1349",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/item_drop.wav",
+      "bytes": 44144,
+      "sha256": "41f51e97c7191c6a1589aeae6cc248eeb6be973d241e542b74658cbc5fcef856",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/key_pickup.wav",
+      "bytes": 186430,
+      "sha256": "f24d7b57ae80ec6f8e3809ff217ad6d056d1a4f77120e4b9b2765723094c4ca9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/leap_land.wav",
+      "bytes": 229364,
+      "sha256": "9cf1d72feab77ed500b76f9d16d4baa00825829a10a3275f3dd58f30fb6448bf",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/legendary_drop.wav",
+      "bytes": 357726,
+      "sha256": "1f1876ae6e150128d97cd5f7ce27f26b4c61e78741aa87cd9fd5bdc6ecc46f5f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/level_up.wav",
+      "bytes": 370484,
+      "sha256": "3b1b702237783d3434fe3c3adbb6a937e17bb0088ce2c1df87f59a3b31ae7f0c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/lever_pull.wav",
+      "bytes": 105884,
+      "sha256": "e8ca6812921e37146d63b0ec7c69a2fcde888f8a8dc5d6cf897dc4c0be1a6ba1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/lightning_loop.wav",
+      "bytes": 88244,
+      "sha256": "e081a2c121936cfc9d192185788321d965f16d1636575d5179d20ef0f5521b6c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/mana_empty.wav",
+      "bytes": 26504,
+      "sha256": "ad4c86358bbf5860ac9e6bcf1e535b85f53ccb305ec12fe6d00da15f593f0c09",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/music/demons_lair_a.mp3",
+      "bytes": 4631735,
+      "sha256": "d1bdd092798e8c9e4df6dfb747dae97c150d02622b1848e9cc27ff7b8ff3c18c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/music/demons_lair_b.mp3",
+      "bytes": 4722378,
+      "sha256": "6ecb75f062eb2a5bdc2dbb9251d3e251cdac8fe43731a8c9503d268879fe9258",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/music/demons_lair_c.mp3",
+      "bytes": 5082443,
+      "sha256": "44559871c91ed444e1b95fa9fe9accbce9796543d351eec30455ddb554e514f3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/music/the_pit_a.mp3",
+      "bytes": 4888479,
+      "sha256": "d6c94a6b53dd898451a0fe1015b9e13a1905e1447a0c04f61563c2fb7dbc0c52",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/music/the_pit_b.mp3",
+      "bytes": 4412973,
+      "sha256": "697420daa68e2fc76613888104c47f5c1d873ffb296d74e4fca11c91f99348ea",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/music_village.mp3",
+      "bytes": 5368641,
+      "sha256": "43438c8fe4cd775bc89d1d9e51f29ee330e2b99ca27c13f1cadf72fb039acf36",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/penitent_attack.wav",
+      "bytes": 70604,
+      "sha256": "b72018d733821611ff87ce9fca6390dd0284a34f4e3236dbb53cc7b456a7bba0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/player_death.wav",
+      "bytes": 423404,
+      "sha256": "75d0202532819a02bdfc4bc05be51a6098f0a45525dc5d401b5455f91817cc27",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/potion.wav",
+      "bytes": 110294,
+      "sha256": "df78484da387ed7e0086524b251ba1b8f55215ab1f0f444195143b33da07b5a6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/sentinel_attack.wav",
+      "bytes": 114704,
+      "sha256": "30894f97b0d04d291cb23954d6518d3aa072f7a96f3a06adbbe8d71c2b23bab5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/skeleton_attack.wav",
+      "bytes": 44950,
+      "sha256": "c4a61cb1386305e99b0ac983b8ccfdeb3c4e8ba969f40f34329b233ea8b8a411",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/smith_attack.wav",
+      "bytes": 70604,
+      "sha256": "0d45a529220c479cc84b94df904339e1f96edb2f5a76677a95d2325be5f700fc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/spawn_screech.wav",
+      "bytes": 97064,
+      "sha256": "999d209335fe3dd9d5b55933048e73f85ac4d97a7878cac8d172e90a07eb6594",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/spell_bolt_cast.wav",
+      "bytes": 31796,
+      "sha256": "ff98ba664e683f56e0200fd0365414b4db210156191e8bc63138f97c4dad5170",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/spell_bolt_hit.wav",
+      "bytes": 35324,
+      "sha256": "5bb0197510a5582c971295506c5c78de518730a96cfa2aaa28e988c4cf93dd03",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/stairs.wav",
+      "bytes": 264644,
+      "sha256": "7e442c768c7520f3574cd947f40eb89715c796af21cd3ac58c042202c21c28bc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/swing_1.wav",
+      "bytes": 33560,
+      "sha256": "c70a1be59e4e7d43116e00c84afee7bd03232ec2f302206aafc119ed1f23be15",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/swing_2.wav",
+      "bytes": 38852,
+      "sha256": "f0becf4f45626c71183252e97497cfd7911153df1aebdb72284c525ed4058d75",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/swing_3.wav",
+      "bytes": 45908,
+      "sha256": "7c513b0d504106dfb1249abab3fc8d63972fc4088ebc944e595da233573a07ea",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/thrall_attack.wav",
+      "bytes": 66194,
+      "sha256": "318b56cc3e3c2080c8078ac2c67e1643c127290bf663e5b49be48458d47901f6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/torch_loop.wav",
+      "bytes": 352844,
+      "sha256": "20a9f319a1916ecb9c7b76bde777b88ef841b42ee29d3758094dbfa2069a30fd",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/ui_click.wav",
+      "bytes": 3788,
+      "sha256": "7ec6aada582be35cb6fc578736d140f8b0e96e6a3b89eda46ea7a5d7c355d365",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/ui_open.wav",
+      "bytes": 37152,
+      "sha256": "dfbdd4795b0eddd0a9b8c62e6d21fcf48b18e7ba5bb23e6c5766a8690cdf7433",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/vault_unlock.wav",
+      "bytes": 352844,
+      "sha256": "6640bb0399757bd7f665d7de68a8af518c04090b803430e6a9e3c6509d400e91",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/voice/01.mp3",
+      "bytes": 348909,
+      "sha256": "e1a62a7e7e20f4a80b63fad9639239ea482512556d40fda5d90c070fb7bb720c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/voice/02.mp3",
+      "bytes": 353613,
+      "sha256": "0f7ca0f0e017e7eaa19975149fdd321661db47e4884de701e5cfe322948f6dd9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/voice/03.mp3",
+      "bytes": 223965,
+      "sha256": "f658d8df94957bacace56bdcb63b337c90605686cf49c0796acb2b5870f4fcca",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/voice/04.mp3",
+      "bytes": 191565,
+      "sha256": "6b72b412a800b1bc8446b03267761c8ab601efcbe2ba8129ffdac506f35181d2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/voice/05.mp3",
+      "bytes": 87309,
+      "sha256": "a13a7c49444b58587bb5d9745502ad2e861cf2b55adc0369d1d1fa7a06951c61",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/void_bolt.wav",
+      "bytes": 123524,
+      "sha256": "6ebc28eeacef236bbf9b089da079767eebfc70bc6b2abbc03fc995ca1be42c66",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/void_hit.wav",
+      "bytes": 141164,
+      "sha256": "b968ca872c1455d1e39b5e77d845ffe5b2b8ac2c5f6e2d895002d126ccd5a433",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/void_hum.wav",
+      "bytes": 1014344,
+      "sha256": "3e19c16e0c1855627d16fb3d82218ec8c35ade3d8d4586803b731bcad13a167e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/war_cry.wav",
+      "bytes": 194084,
+      "sha256": "04827f58d94b6a2998e4f0bef32ec64a22841674df067192d9cbf77f9c8b6297",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/water_bolt.wav",
+      "bytes": 90008,
+      "sha256": "38a377cd832da07f60e86fb6705d80c90ae3e36d2a0377fd3493ecf588bdb400",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/water_hit.wav",
+      "bytes": 44620,
+      "sha256": "73469e1b45066e6ea9258efce14762dc5ea24e5a94d4bbe99ea28daaf77bd39c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/audio/whirlwind_loop.wav",
+      "bytes": 88244,
+      "sha256": "555f5d40e6a5d8e7a4dfe0dc7938512bf282a275f6cb8bdb681ba60887fe2505",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/fonts/Cinzel.ttf",
+      "bytes": 125468,
+      "sha256": "f4d83d34d1f6c741193e4acf4b3dff9531e5a67b6aa65228d00a7db72a4e0f34",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/fonts/CinzelDecorative-Bold.ttf",
+      "bytes": 62300,
+      "sha256": "e854e68a388aa50d742a4415c1ae5c17a617ef7956c95a70021d0a4a44f20518",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/class_barbarian.png",
+      "bytes": 84775,
+      "sha256": "84b099238e4b02833fe77d65694addea9912b33b15dddad4458065298a272dae",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/class_sorcerer.png",
+      "bytes": 86590,
+      "sha256": "b3546c3462e1f8c017ba54975aa6b37df620fd9e8cbe8b327faa9b7a5c648dcb",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_amulet.png",
+      "bytes": 32932,
+      "sha256": "5c4d8500a6d402339629e1b53e9e27fb1d4a23fc235fc8d8934183ebb40d6b22",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_axe_bearded.png",
+      "bytes": 18409,
+      "sha256": "90b41f4233738dce00e206a24080a24e8e6cd5b58f68df4ec53eaa7af3ef8278",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_axe_double.png",
+      "bytes": 25106,
+      "sha256": "dad48d940d43ed51ddb1961c5cf51297b108bacd1f1242ab9fc774cf1f964475",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_axe_skullsplitter.png",
+      "bytes": 18959,
+      "sha256": "e28391c4c765ca4ad8adcac23c29416470e08ccc4d2860b7d2c3a66b3d8f6ea8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_boots_fur.png",
+      "bytes": 58314,
+      "sha256": "0488c392b07f36827ed1ca7377448853a2595bbc9eec774487cf25453583db5e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_boots_greaves.png",
+      "bytes": 36272,
+      "sha256": "718f8d33ae9a1c7904b9904d5e0e0b6d8b4a58fb7d6f0e1f873e458b1f3712ee",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_boots_stormstride.png",
+      "bytes": 47619,
+      "sha256": "d026daca8b65e6e653ccc0ae60b5a46873ce24a11e919db8f62936d5aaffeb90",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_chest_bulwark.png",
+      "bytes": 58263,
+      "sha256": "2e52c0c2d0c3b59d42aee4c72a42c3d40bd5b715cd25c5d286a994b74afd994c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_chest_leather.png",
+      "bytes": 65328,
+      "sha256": "e0a71dee750a4cd9ef9f27d799a0582ddf849ec3a52e77c71accee05c01f93bd",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_chest_mantle.png",
+      "bytes": 61324,
+      "sha256": "c1cc08b65b5d7c3b8f6e2f84e6fa3a4e8410dc399bde442605e1b9c937d676f1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_chest_plate.png",
+      "bytes": 63654,
+      "sha256": "6549c6294c08784c7ef528f54a75efa3621db6f8201a5d3867e097c772c804f2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_chest_scale.png",
+      "bytes": 69489,
+      "sha256": "ddb1d2b656e92992049978f79a99104c6385f0c6a947f97ce9cdd1c2a3167c6a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_gloves_gauntlet.png",
+      "bytes": 54160,
+      "sha256": "c7c2340db052403cde72c94ac3684782bbee6f950568c12e38661a7dde7d815f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_gloves_hellforged.png",
+      "bytes": 63555,
+      "sha256": "8ab323daa7a89adaa0191aff79c4c4f23d0259c8b7424e8fd9e3ce84106ae015",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_gloves_wraps.png",
+      "bytes": 58375,
+      "sha256": "64fb7ef2cffeef34c5696d6556e31e81d9686b687b91cdc45ebfce3d9246acec",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_gold.png",
+      "bytes": 54429,
+      "sha256": "a43e5d6fcb60c9ead01c79aa33b2295644ff836500d66f5737785a2e6c247141",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_helm_circlet.png",
+      "bytes": 31306,
+      "sha256": "007e40ce75062453493bb583f73f4911cd24206f314159f786b00ab96053aaf6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_helm_cowl.png",
+      "bytes": 46013,
+      "sha256": "08f84283ee4f4309c99ec937f9148817180c2f4c697f519b8512213d099c64ce",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_helm_horned.png",
+      "bytes": 53830,
+      "sha256": "836d6b8c2119b0282db16d1b5a845336db82debe199d7c92e4f018afec52dde1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_helm_spangen.png",
+      "bytes": 55384,
+      "sha256": "00ba780af8e01e089e7f200f14b1538f1625d643ea90467310ae20386880b019",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_helm_warden_crown.png",
+      "bytes": 58518,
+      "sha256": "70b82597e05fa9cdf480de2b0d5035437832f8ec45e2b05931e85ca7053db1e9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_helm_wolf.png",
+      "bytes": 39021,
+      "sha256": "a3be2719de466e40234ee8b4b7290cc69af9064472e2dd2095718aba74d39e43",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_mace_hammer.png",
+      "bytes": 16128,
+      "sha256": "f44921266ded46ffbad866b9785196095eb92ffcbaa90f750c7597a2bf7d172a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_mace_spiked.png",
+      "bytes": 18484,
+      "sha256": "06b5511de82faab72f603f87651271d15d49d135063995494323fe3f0d07bd2b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_potion.png",
+      "bytes": 40763,
+      "sha256": "8f73f289ca0ed2f07d93f57e70b7200fc1f18f3bb782dabdebe0e69a6641b933",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_ring.png",
+      "bytes": 48669,
+      "sha256": "7d24440e27cb91f83280bdd85cba5dc0b79c63666903df47d0213cb713d1f07a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_staff_bone.png",
+      "bytes": 15338,
+      "sha256": "e8543928972f74bfb544254e92e864734749b4ff7a60e981ca2823c2e485359b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_staff_crystal.png",
+      "bytes": 13983,
+      "sha256": "08de90876f67c46986bee076e2a028d7b95cbb4aecd1c6f79e6e678c687af591",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_staff_gnarled.png",
+      "bytes": 14338,
+      "sha256": "657da0d5b1b705b26fbce0e0ece9dff1943630893da9c7244a1aabfab4b8b419",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_staff_voidstar.png",
+      "bytes": 15695,
+      "sha256": "4d72c89233bcff4deb2dfaa521325f45ecd8ad583abce9b546a89bf7c6836e5c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_sword_flamberge.png",
+      "bytes": 15128,
+      "sha256": "2066d75cbcb63de8c82793383eec2162ee4e9af2c346e8fbd32140e147d0d308",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_sword_notched.png",
+      "bytes": 17306,
+      "sha256": "570d362e74c1e75a8be4c66b7c470dbb1bc5e0e7a88010b0bba948786b853e90",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/item_sword_runed.png",
+      "bytes": 17485,
+      "sha256": "5d76c46835c15035b4743e48272844e2731583f68cf0021f2af06ef445f50709",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/potion_health.png",
+      "bytes": 15927,
+      "sha256": "989d50657f70dcc29c8a8f178687660838797b7618eba95f71238f8fc9360239",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_arc_lightning.png",
+      "bytes": 21354,
+      "sha256": "3bedc2f4c269e0d57c0cbb7a2d506470af3e3f145b35f6459da1eb7cf9e52171",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_arcane_bolt.png",
+      "bytes": 19864,
+      "sha256": "7b3a094eb0dfcbaa679a0838db48c88cf94fab8350f2464a4b937fe7f205e926",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_blink.png",
+      "bytes": 21183,
+      "sha256": "bc4ea5229caab510337448aa858e181d521749cd439cc752918025a0a5108f6b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_cleave.png",
+      "bytes": 20327,
+      "sha256": "8f0bcf493ef9bf68b2101c5bf1552fb259511f08b7ffd4aa075a5fafcdf61744",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_fireball.png",
+      "bytes": 20387,
+      "sha256": "ceb9d859ec4322419280966779ec180801472d009d123912619c243a2a31dc66",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_frost_nova.png",
+      "bytes": 34473,
+      "sha256": "6aa95f77dc69335f3aadba7a953a9b0652ae3ffee0a8d31bf8dffac9d68bebf0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_leap_slam.png",
+      "bytes": 28952,
+      "sha256": "e8ef599d8b728b6a005233aaba016ed9afb06c6d4e41226ef4e428b33241393b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_war_cry.png",
+      "bytes": 25726,
+      "sha256": "6831138ac7e4135586ffd9319124f6e533003bddf4ca491e81a96f2bc09b49f4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/icons/skill_whirlwind.png",
+      "bytes": 26491,
+      "sha256": "824a53099cbfcdc12d45e29b0b85228143728f9721c5c4d85b3cd074c8d50a30",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/abyss_seer.glb",
+      "bytes": 1653352,
+      "sha256": "0ba5ef440fa2496fee58830f5f24730fbd6f7d0a8b15bd6c903a5d9cfb188740",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/ash_smith.glb",
+      "bytes": 2064944,
+      "sha256": "9542e9734951082c701f9832ce3406d22755891a3c614c4f7feacd5a0c7c5fb7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/boss.glb",
+      "bytes": 1810124,
+      "sha256": "4eeb16f20e50500ac1c1cb4e30b3c49a718162f1839513796e8e62eda6f8cd99",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/cinder_hurler.glb",
+      "bytes": 1541236,
+      "sha256": "1400c424727ac6c47ab0ec0c617d7974973d2fe658cbe093aad6dafaaf1a0cb8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/drowned_thrall.glb",
+      "bytes": 1706888,
+      "sha256": "7c4c775af7e343fac8ef2a447c823067d5f6cb6109be66cbbe5e9298ba9693d1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/drowned_warden.glb",
+      "bytes": 2682268,
+      "sha256": "2aaaa259c3642507e3beaaf3e41ce8e614a0ab6cef1a95b0eb2c30702fa7407b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/forgemaster.glb",
+      "bytes": 2974440,
+      "sha256": "ef447da219b9e865b251a46597b7424201b47e5e3fd84857c6ed54e342cb3e5a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/ghoul.glb",
+      "bytes": 1221340,
+      "sha256": "d73f750cc3d7dbb924d4db84d56ba75a1420e2e6973d3cb58ff336d886756f78",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/hero.glb",
+      "bytes": 2836220,
+      "sha256": "74d088f7616cc064122a5926b07783d1bb8be3f9416d68d2c120f0ad0c399172",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/hollow_king.glb",
+      "bytes": 2810940,
+      "sha256": "00ee69eaf3e46ab24521091f0516e7234f9ca5eb9a0f45bd024f605a477d2391",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/hollow_sentinel.glb",
+      "bytes": 2059532,
+      "sha256": "c9d91d51369cb0b3d4def98e45ed7da05d483bb215eb861f5ffa563f4289ab9c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/skeleton_archer.glb",
+      "bytes": 1604996,
+      "sha256": "7d0edbbd0bc0d0a5fdbef7ee009eccde2bc8fbc838e362b2c66f18055a915618",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/skeleton_parts.glb",
+      "bytes": 902504,
+      "sha256": "9022a7c73ac70fcc21e62a8a6db73210fdd2d52acd084ca6d4deb90925274f17",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/skeleton_warrior.glb",
+      "bytes": 1627988,
+      "sha256": "bb65bd3e2e3c3ffb1b10b9448b0f3ec640c818302c5a9a88c032c7105ab41c22",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/sorcerer.glb",
+      "bytes": 2646416,
+      "sha256": "a95269c849bf0b9433cdb4a3c8227517a659db748fd2ce8dc9f2e35d54c0fb02",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/thorn_penitent.glb",
+      "bytes": 1803264,
+      "sha256": "f41d2256d52909552919b2838abe4bb9906a245838b484239f853c736a5bb5f3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/tidecaller.glb",
+      "bytes": 1553904,
+      "sha256": "7216b359824b2a14a4d1194e95e8d5c9a85401b14128928e0defcc7d3eea3ca9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/void_spawn.glb",
+      "bytes": 1320132,
+      "sha256": "95c0cd23bdbccf9a71731750ca405b0261089e38d7cacbeda3771a86228ad827",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/weeping_chorister.glb",
+      "bytes": 1503008,
+      "sha256": "bdcabe487a40577bc0e5845599cbb0958477bd9b9923006a1c151fbd87376d80",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/characters/weeping_saint.glb",
+      "bytes": 2194636,
+      "sha256": "2643eeb2d2323ba675a0d5ab43182b57336ffe6029674d577fa6619775eefec7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_bones.glb",
+      "bytes": 364252,
+      "sha256": "a231921e6e9da5873cbc175dc485e5541f04b9c78ac11eee02bfba62a659a4a9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_chains.glb",
+      "bytes": 349276,
+      "sha256": "6af9a9d4d0676bd4f9676e043da4e7b8120ab052c82e94208b22887a59b8c2b3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_crystal.glb",
+      "bytes": 315804,
+      "sha256": "9648656fc1811a43b9b94fcdffff460b8cd1b515d0f6245abe828e036c323e97",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_eye.glb",
+      "bytes": 219660,
+      "sha256": "c6372048d18917a7d437fe0226b2f3e13f03d3c8eb5d2a3ea69667dd754cb5cf",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_floor_a.glb",
+      "bytes": 389412,
+      "sha256": "8a318d2a69437f224710af83a248fc7d8fcdffb1e1c4f895cd55446cfcb20230",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_floor_a_depth.png",
+      "bytes": 34012,
+      "sha256": "6eab86905200973cdbf16e12909cb2424a9db11572cfcf571033e2183c90daab",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_floor_b.glb",
+      "bytes": 421140,
+      "sha256": "e4dd432cef43ce7fb876163e09692bd4ad1300bb7c0e2bd62e8eb9de6e24c8e3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_floor_b_depth.png",
+      "bytes": 53875,
+      "sha256": "b254497ce45b71bfc7bef9939151fe045139ee4b31fe693eb62f9114f70f1ef7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_floor_c.glb",
+      "bytes": 581816,
+      "sha256": "481e0a3d2f4dd48749182c6e89c308b7d508c13da1120c1f32de4146ffb8c248",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_floor_c_depth.png",
+      "bytes": 83708,
+      "sha256": "59499af3181358f6b7c6fba74a0dd50dac724ccc3224ed411bf69ac0255175e8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_pillar.glb",
+      "bytes": 736176,
+      "sha256": "64cf4533a7044a2e771fa29325055db02847cec57e6ab0b1acccda9397316427",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_pillar_low.glb",
+      "bytes": 668696,
+      "sha256": "e9b8274c047f01283aff0d204b0ba30bfaf8f5b23275262d3561f184d6df9af4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_sealstone.glb",
+      "bytes": 280876,
+      "sha256": "53b123139445cbde666e827158649a30760324d41d4a8e2108fd24886139e2f9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_shards.glb",
+      "bytes": 207680,
+      "sha256": "5d9aaa8d746ad8ca26642aa9be82599126bc1b8e6643e32c0e0e0aff1c3c79cd",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_wall.glb",
+      "bytes": 499824,
+      "sha256": "43b15439eccd3e226f5b662741369d046861c0928bf77faaaebd8408fb8596ec",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_wall_b.glb",
+      "bytes": 699544,
+      "sha256": "cd1086b76d35e72f12c300d4afede2e7e02ca24c23d68886c1235dcf92e0009f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_wall_c.glb",
+      "bytes": 396992,
+      "sha256": "bd02b3c0ebd836d3314fd519f63705eb8ac83fc5d790a4999597df757c8a90c6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/abyss_wall_low.glb",
+      "bytes": 729004,
+      "sha256": "ff256fafe74084a0e62b40df9212053abc3f3ab6cafc8f72a49c6192bd7c6457",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/banner.glb",
+      "bytes": 213064,
+      "sha256": "e791900c137c8160e7d5670778531d866836902b89c55389d8503fef0c5beba4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/barrel.glb",
+      "bytes": 222960,
+      "sha256": "1c01989e3558c1f243fd24af7a395079575d6fbb43aa5504b407b87c78e29d20",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/bone_gate.glb",
+      "bytes": 495072,
+      "sha256": "9a65f2fa5a8fd1ab89ffc5925a2a7e9c87db4a4d513b53236c65107808d5bd51",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/bones_pile.glb",
+      "bytes": 504348,
+      "sha256": "05d2f776df69fc52c8bcb5ce6399bdf2b41ef2dc050625726e0c1b8dd2e8eae2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/brazier.glb",
+      "bytes": 443092,
+      "sha256": "1837bd2f97cc64e31c2253a92114460d70afa0d92441b236321842b9192b8eff",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/candles.glb",
+      "bytes": 251348,
+      "sha256": "e4a21c049da737f2fca24df88631942e20b0e6a95c13cefa47ec79b174d82e6f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_floor_a.glb",
+      "bytes": 756964,
+      "sha256": "403eff41fb4fa6945c2a7ac321edbba4ac367fe61f29ab9172edf8072a71945e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_floor_a_depth.png",
+      "bytes": 181921,
+      "sha256": "cd661fd61f6ecec8b0af688e94aedd007431bf6fa196a3bc4be2ea0bdbd01e5c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_floor_b.glb",
+      "bytes": 796664,
+      "sha256": "d897ce25c4c3dd596ac9bf2402427130b0129db1653949f217ec8b475753c672",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_floor_b_depth.png",
+      "bytes": 198116,
+      "sha256": "8b8c9969eda192dc7dc05ce44c4a3d96aa17d13e041a705497242821730c266c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_floor_c.glb",
+      "bytes": 911688,
+      "sha256": "ee2eb57d38f0c3d294bf42429bf2768db49be2ea320f441fe76045d7d0a67e32",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_floor_c_depth.png",
+      "bytes": 187785,
+      "sha256": "28054631053ecfbea0fba1495fc96fbe594e0764ea28203a94cbca250bcfcaea",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_pillar.glb",
+      "bytes": 1063812,
+      "sha256": "3010cfffb4945ef059ca4c83983eb8feae65f6272d537ca468e14511038ece00",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_pillar_low.glb",
+      "bytes": 1001036,
+      "sha256": "54bd3fd9ef2f7ed9a233b94c4f7436d9eb1066c4d54cbbea1f49ea1f2cd54b93",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_skullpile.glb",
+      "bytes": 351716,
+      "sha256": "3286030a360e3a019a02d57ec40cfbe5ae747038353b58a4ed03c10ece1de0a7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_urn.glb",
+      "bytes": 278944,
+      "sha256": "2b4222f52e439712d8d512133c66aadc99d15dd6c3b924dd17666860b350ea4b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_wall.glb",
+      "bytes": 1036432,
+      "sha256": "ef99dc9a5ed444204198b2be615f6cb740039a9fa0fb11f2541a89fe60007bd9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_wall_b.glb",
+      "bytes": 1192796,
+      "sha256": "ad84de6b293269cc220854fb654e18d2195261dc5ad60f0a540d1720341224b7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/catacomb_wall_low.glb",
+      "bytes": 1197744,
+      "sha256": "8ec420d93c1f34f7932e42f183e5b15b4a5cb278317dbadc23812abeed4186b9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_altar.glb",
+      "bytes": 362116,
+      "sha256": "129f7eda74d5f2a6d04787aa70dfcbd76e5d972806bb8ab756c450575e7ddab2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_floor_a.glb",
+      "bytes": 532076,
+      "sha256": "83221b43dc44ef74b5c380c7830e55d4ce670ebee00ba00ec20e8085e8362e54",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_floor_a_depth.png",
+      "bytes": 37910,
+      "sha256": "b85c5d9da139334addc980d506ec5675317d5c3701ec240d90c25af376e1612c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_floor_b.glb",
+      "bytes": 576644,
+      "sha256": "011353d6e79c97ce0f85ae807274f2ad43f7b5fbe5885bb193fbfb31e40425c4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_floor_b_depth.png",
+      "bytes": 57429,
+      "sha256": "8f832d66ebe8e16ff1d0415be2725eb23d88e33c69225c1f2a5f97907ed40608",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_floor_c.glb",
+      "bytes": 702484,
+      "sha256": "b488b95abecbc6a1b21b420a1c40ce0e6b6bef7e73a016714cd96e6dec317471",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_floor_c_depth.png",
+      "bytes": 63873,
+      "sha256": "8c95073162cefe242f8ba7d466d25d46680c7134ed1b312ddca41a99a04f4046",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_pew.glb",
+      "bytes": 278124,
+      "sha256": "fd14140b0ccbccbe79c6319075204330a7006916fe1f9665895a64b0dcb1d2be",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_pillar.glb",
+      "bytes": 721812,
+      "sha256": "e777984897cce0b73eda39b56d8596f0767c59404e1de24a9ec675b2ef54e5cf",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_pillar_low.glb",
+      "bytes": 694160,
+      "sha256": "bfc1d7088c5175c03a2b3dca100ffaf2cfb714d8bebbf39bc313b3dabaa6b42a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_statue.glb",
+      "bytes": 338048,
+      "sha256": "6f207ad56a544d9e315f0cc87927569b66b05bfee4cd49b145c21b65aa54b527",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_wall.glb",
+      "bytes": 710552,
+      "sha256": "90f99f3a47d99c79a0d573db594c6e9ec994fb3a631b6b76e5f064f52138a90b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_wall_b.glb",
+      "bytes": 771820,
+      "sha256": "ad73c376319a3e4391687552a4d577a4c58eeaa547e2fae3e9ab24d4f5f9f6c4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cathedral_wall_low.glb",
+      "bytes": 651080,
+      "sha256": "6484da9253cb4bdc030b4fd45a319d593cd71692c073550ad0e0adb15f73e3a9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_boulders.glb",
+      "bytes": 382744,
+      "sha256": "a91d00064b00a1850f8a3c8b5f0b7f319a013035b9aa37e77b30bec06d0e88cc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_crystals.glb",
+      "bytes": 340608,
+      "sha256": "c794d31e393ee26b7afd7f40765cf4485af3033ffc29925adcdbf6f093f24c2b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_floor_a.glb",
+      "bytes": 660376,
+      "sha256": "0bf587b223305dec3053f6ca50c5155b59e1d67d35eedb7f52c72caa3853619b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_floor_a_depth.png",
+      "bytes": 189034,
+      "sha256": "2cbff06075e08deb29ca9d38619756f55a99277f449bc9e91cfa09cf194abb32",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_floor_b.glb",
+      "bytes": 659768,
+      "sha256": "fb60a34af7037d60b39c64eba303afd3729383c5c5b099a4d778a5f7aecd3265",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_floor_b_depth.png",
+      "bytes": 177385,
+      "sha256": "db61aefb2a1ae84bec9ec04d3324d9e189d4e1c5485a1e003b3ee90dd0f8910c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_floor_c.glb",
+      "bytes": 667480,
+      "sha256": "a2e1eceb537f849e84980daef73d29c75fc3567e0c270397ce4128028deaf7fb",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_floor_c_depth.png",
+      "bytes": 188008,
+      "sha256": "35519c9952e3f26c00cbdc89aa0cdb1d20a7c64fc06cf50b1161ee8bdd9538e1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_mushrooms.glb",
+      "bytes": 374228,
+      "sha256": "b15de7b65e19f2b3676becbc8341fc02401b9ab95e96423d9118b6479c8005ac",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_pillar.glb",
+      "bytes": 606252,
+      "sha256": "3c6f54f28de276bc4d69e0a2d33f554d3ed13142f0999421e995139d66474b49",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_pillar_low.glb",
+      "bytes": 578628,
+      "sha256": "c62dd934a1861603ecf4df860dc4830f87d890d33f435bcc7147407fa659039b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_pool.glb",
+      "bytes": 285064,
+      "sha256": "9b0fbea38a43ce6238d7009b1fff182ef183f5862a3aac99095a02164f5371f3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_stalagmites.glb",
+      "bytes": 327656,
+      "sha256": "9444f51a80a572cbdea592a2d9cdb11e3bc57176e88a28464371d65f310c6012",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_wall.glb",
+      "bytes": 616848,
+      "sha256": "76e68cf07e12dbd7722aa68d13be6d305cb8528297f5573cdc57a604194e150f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_wall_b.glb",
+      "bytes": 575416,
+      "sha256": "4aec08d3e978fed62f43ab5c64d97a49fdaf35d7f4d6d86a21cd9627d5612363",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/cavern_wall_low.glb",
+      "bytes": 758588,
+      "sha256": "1305514e6c7b5225ba025212c3514fe64ecb1fc5dacdb717ce94a9bb374b06b4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/chest.glb",
+      "bytes": 254420,
+      "sha256": "70ba14fc32fcbcb30ac02e9472e06866f80b3730d4b0f3f9f5f5a561d17e184a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/chest_lid.glb",
+      "bytes": 327924,
+      "sha256": "104f9a77eae59495f1e3677b1ca5628434f8b64e381e68fb6ed5fe72163b0f34",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/chest_ornate.glb",
+      "bytes": 392928,
+      "sha256": "29bcce75d101a0bfecdc6061bf28294585a839767b7ebf667a15a5b91ff9561e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/chest_ornate_lid.glb",
+      "bytes": 381136,
+      "sha256": "9d1dbfad80d4a35d8b4b66eb3094eb874d70f6cb03e53f6c0b1d9250679243ff",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/chest_vault.glb",
+      "bytes": 495560,
+      "sha256": "05b6fa23cdd4f0ff4eddce154074df8ad3fabef2b5d77fb9ba9f829fef07337e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/chest_vault_lid.glb",
+      "bytes": 380100,
+      "sha256": "5f38cad76f9c351aac12264d92fdeae3afcee7d1f31afd6da48010e8013aaa3a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/crate.glb",
+      "bytes": 237648,
+      "sha256": "1f9336d8ffaf1a634542dc4e450a1e66c6781ab7e5a4f5e7de74921c07c22ae8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_ash.glb",
+      "bytes": 157624,
+      "sha256": "04f94dffdec35882283d2146ecd82e38a596ddebfa7f8e1a2833898b8f66e27d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_blood.glb",
+      "bytes": 107032,
+      "sha256": "2de2f8e8d7f7442bb678ce260f681fb8bf06fe1dc42d6bcc225cea4a5e5da96b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_cracks.glb",
+      "bytes": 276980,
+      "sha256": "207504d437b3b0a83b02914201c2181f15a7953ae2bf062bd5030c76212cf1f9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_moss.glb",
+      "bytes": 163976,
+      "sha256": "86de3d218c83cd96c1ce1d8692cacb01943b9e6bf84fff8a5a80a2d9bc97ff52",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_petals.glb",
+      "bytes": 286700,
+      "sha256": "43dd6df49fb945681f9de1eee4868a38e0fb82a443e28406e9a616ad930a59b2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_puddle.glb",
+      "bytes": 85884,
+      "sha256": "785688deba3f959263a28f10674a1089898bcdd1cd407768d5d0625ce6875385",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_roots.glb",
+      "bytes": 286632,
+      "sha256": "c3b500b1ffcf66da795b161f3d6303df13dc33facafc5ebd92455f221e259756",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_rug.glb",
+      "bytes": 150172,
+      "sha256": "9db6cf1c68a02cb9f51643a4fb9713ac7e550bfd8a3a3060724741a1455d948a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/decal_seaweed.glb",
+      "bytes": 239560,
+      "sha256": "fd9eafda175c9deaf701f1ca3d90b6877a902e4a42bc74f003ffece3c8579c62",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_anchor.glb",
+      "bytes": 344348,
+      "sha256": "c205049302dd81ec79c8cf07e375a35233d927439609d96a09570aee4b608611",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_bell.glb",
+      "bytes": 285528,
+      "sha256": "49c55fa6da8a75ba6189d1830332070e85434a16f27f5682bd8bb2420a4e16f5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_coral.glb",
+      "bytes": 382848,
+      "sha256": "24b115d682bc20c753231bda2712ab8b2e281073624796f334c3ec300afd25b4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_floor_a.glb",
+      "bytes": 1251648,
+      "sha256": "f5d43ecc89e92790c69775232554e110e225b14c7757168565b5e3c5697dc49a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_floor_a_depth.png",
+      "bytes": 330700,
+      "sha256": "81bb30820ebb17a6a0513db4fdcc6c9bb1598d8a4141fb9ed7c6086fa796384c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_floor_b.glb",
+      "bytes": 1228568,
+      "sha256": "25e0971b5f2cce0c380b7798dd38780cdd36587641c797bb8dfa71a7be148138",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_floor_b_depth.png",
+      "bytes": 323527,
+      "sha256": "7adb6cbb23a8da81cc9ec870517e6c432ff4e241d243bcdd0734f21f3a41ed79",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_floor_c.glb",
+      "bytes": 1468264,
+      "sha256": "704b82d86f71a26b0764caef6848057ead173581aae9f4f2f92bbeb10ff70e4b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_floor_c_depth.png",
+      "bytes": 215217,
+      "sha256": "8a40244e8edc89ed35db6bbca17f831324852c4d78a21172d641265651959e3e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_nets.glb",
+      "bytes": 349592,
+      "sha256": "b1f1b70adb246a1f559183b252488113e79de84742c68c4dbc8e9b5661f8093b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_pillar.glb",
+      "bytes": 1069820,
+      "sha256": "c865769afcd79780a6be0d7a0c90b115527e3576c4eea0f23fe99d036f2ed344",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_pillar_low.glb",
+      "bytes": 995160,
+      "sha256": "b939fda541728874053bf483fa713df28b9c7ffdaf2e3af1798c4c4a866c6d6b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_ribs.glb",
+      "bytes": 334276,
+      "sha256": "f9a2852032250d5a1ce315d3045c0663f367312cfea1f41aee81688c06b71a1f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_statue.glb",
+      "bytes": 296472,
+      "sha256": "7c71365433ae6640e32155464d5748f009adb27724d12296a93c79d77325f14e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_wall.glb",
+      "bytes": 928672,
+      "sha256": "75de2c4b5945c514f846e9c17259102c0aba4ba88f25f9b70acf1aaf4fe90aff",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_wall_b.glb",
+      "bytes": 1028920,
+      "sha256": "5ad4d6c051a66cc026c4a2b24ac42b5c49ca4c8eb98ac200ecff945b14af786d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_wall_c.glb",
+      "bytes": 757324,
+      "sha256": "0b9fecb6b107e42d38ad4704fb5e3062e0b05fd6ddaf2ad7b7918f9b130aa6b0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/drowned_wall_low.glb",
+      "bytes": 1033644,
+      "sha256": "9f73f4c6d14e6bdbf635737d4088011e500f7739320f3899291166ed2ca29da0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/floor_a.glb",
+      "bytes": 667168,
+      "sha256": "2cab9fc0ef515414d4ebf47a18be802804fbabab05163889ecacbf8125b232c9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/floor_a_depth.png",
+      "bytes": 73095,
+      "sha256": "85355eb0f8c7937b346296e199f4e13faae1739a41e89f2e92ebff91e9abfe06",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/floor_b.glb",
+      "bytes": 691728,
+      "sha256": "4248a84908f2153b4afd4c638ee071dd0e6416081b8d7ebb455b6cf2488a8a55",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/floor_b_depth.png",
+      "bytes": 86256,
+      "sha256": "aada0189ccae77829f5f01b77ddb79d7119291c57f1d71d129df775670413a82",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/floor_c.glb",
+      "bytes": 678396,
+      "sha256": "9a03f26f95f55a73062d0eaf9c242c5871a7f1929c1c6e7a0b95b73fd281cf10",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/floor_c_depth.png",
+      "bytes": 78139,
+      "sha256": "eedf32b997550e2ca2a53365ee52d413f1180ba845e303aba067cc85790e72fc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_anvil.glb",
+      "bytes": 257572,
+      "sha256": "58662a3b97c8ad2ce36921a0fafc8374f37164d3f1ded3fadbfcce244be8c0fa",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_bellows.glb",
+      "bytes": 240068,
+      "sha256": "9c4eaff7af793766675a7619da7d7d48c6e0596acdd03bb80a846d524a1d8701",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_chains.glb",
+      "bytes": 411964,
+      "sha256": "d1816206edd695f0ae500994930b1130ecc6f7ee8e98cd995920593c22c470cf",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_crucible.glb",
+      "bytes": 314104,
+      "sha256": "633f75674e5591b7f289763e2108f1120c9d4601514a7ffa63d3c2a4ab28021d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_floor_a.glb",
+      "bytes": 518608,
+      "sha256": "0e058c5d5c68e666c08e27b792f306bae645e009b0961e1ac792bdb6e520b63a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_floor_a_depth.png",
+      "bytes": 127715,
+      "sha256": "74bc2d4371cfe6e23792c8d2b9b946e1633907ca2bf1192cf04119a12e85b3bf",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_floor_b.glb",
+      "bytes": 687260,
+      "sha256": "c087850c73d42637a9b35f8b358f0fc5d56fc6cdec4fed76ceb7cfaa665a5096",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_floor_b_depth.png",
+      "bytes": 98554,
+      "sha256": "77803b5a2ed9e28ea5c3f0035696acbd7644fb6aac22ea3d6784892b2f7ef288",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_floor_c.glb",
+      "bytes": 557576,
+      "sha256": "53e66829caaa6bf2fd1a8e224ca96d92425ab3e7a3fa428e82c3da1bc0f5b1c9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_floor_c_depth.png",
+      "bytes": 109645,
+      "sha256": "7242d4dda4d86cdf04004e5b2ff8bf5a6e4a6b7f1986e467ef0820e30816d939",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_gears.glb",
+      "bytes": 362976,
+      "sha256": "a2990a74323af7a092f104de94170da3584a75ddd057233e02323e612cae8c57",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_pillar.glb",
+      "bytes": 1101008,
+      "sha256": "263441e4205ee3ad65814941b98f9921fe9f42443b4a6dcce514ac24bb488a55",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_pillar_low.glb",
+      "bytes": 1120028,
+      "sha256": "8ecf8dcfee1a39f798036af92da1ffcf449a03582564099a4d57970dc32fbeda",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_quench.glb",
+      "bytes": 226516,
+      "sha256": "453f3df639d30e7561aab32ae500af4549db975c80fa14c7596c4ba77386815e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_wall.glb",
+      "bytes": 887004,
+      "sha256": "903207c50eb03a7da73f169bc9a911b99a74cba62eee808763b6ce4168f36e43",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_wall_b.glb",
+      "bytes": 1179348,
+      "sha256": "23521cf329b7994b91e302afa83a01c78f08fd4e8f06c9e7d262bcaef76abb76",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_wall_c.glb",
+      "bytes": 720564,
+      "sha256": "e2b54dfe1e7997d4b1d786996ca2834e86642ea05f27849d83242dda7b5375e5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/foundry_wall_low.glb",
+      "bytes": 1076748,
+      "sha256": "7b86e3519afad6752ea35c2d468e4452033368e3b615422e351bc09ed1c25b3d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_anvil.glb",
+      "bytes": 350652,
+      "sha256": "97080ea2d0f6200f8fb85538112544df2c22edc480b09b23ebf2e353f9b9e13b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_cage.glb",
+      "bytes": 447532,
+      "sha256": "56f6a448750829b68bce78c823502a86e3da3d7c50d81b18aafb9670aa750e90",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_cauldron.glb",
+      "bytes": 455376,
+      "sha256": "ceae8723a5d74b96416a329d02ec53f416c6429b11095f621a92d64ac0020fca",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_floor_a.glb",
+      "bytes": 615128,
+      "sha256": "f57f66fed3f419893cc6effaecb343c8e8757ece9626326a265d5fb019ef83be",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_floor_a_depth.png",
+      "bytes": 97637,
+      "sha256": "a0806af8971a7304a06daabf1003b136f45e9a711ef616c6ef09fbbffb0814bb",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_floor_b.glb",
+      "bytes": 633064,
+      "sha256": "5eb6c2dab78fb263427c864614a4baf531bb9c84aa7d8133ecb64af3796988dc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_floor_b_depth.png",
+      "bytes": 102794,
+      "sha256": "3f66d2f539cbc785220102b3c6352bf7a13f6b6c8a3886279bb69573ca715fa6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_floor_c.glb",
+      "bytes": 757616,
+      "sha256": "ddfc11c8fcee7edcc5535e5dadb9447344e519039ac49ada48268626f2ad6a09",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_floor_c_depth.png",
+      "bytes": 121024,
+      "sha256": "1bc2dc177c6970c724c03f4b30476d7ff1e810ec52f746319e32ea875246d012",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_pillar.glb",
+      "bytes": 689164,
+      "sha256": "b78a5004e58764898cd4a37621e986803457b520e2a311286209cdbb9afabc83",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_pillar_low.glb",
+      "bytes": 607692,
+      "sha256": "7c1b9699366af5be04c88fce212fb5e5404cbee82f9a7ccf79d71c8cd2b7bfc3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_wall.glb",
+      "bytes": 665644,
+      "sha256": "3f5bb0aacb03208bb565b71cb8a1cd0ada34e8f96704ecadbdd02ea81a3f9cb7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_wall_b.glb",
+      "bytes": 730756,
+      "sha256": "931ff52487cd4bf3c275d93b7f130345436b880d4618a431bb05a6b99bba8ba0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/hellforge_wall_low.glb",
+      "bytes": 763812,
+      "sha256": "6fd5b5255aeabeb8a47fe1fb7bb6275675769679970a85ccdbc94688bc1ef4ab",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/iron_gate.glb",
+      "bytes": 284200,
+      "sha256": "cdfabf719f4ba021aff700f6464492142308e629c1c36232f45fbd8b070264b5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/key.glb",
+      "bytes": 450512,
+      "sha256": "00a244256910f4308609fcda454f974141b518df872514b674e6451bd842774b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/lever.glb",
+      "bytes": 370584,
+      "sha256": "af515f415bafdf2d77c61aad21c949e70aca9b6d8a529ef06fa8f8c782b7f2a8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/lever_floor.glb",
+      "bytes": 1041944,
+      "sha256": "7ac55b032f5e1001ac5be64625a7be7d69b02f48924c3b0c95f10b5fbedb9343",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/lever_handle.glb",
+      "bytes": 254756,
+      "sha256": "d89a5405f11a84e946acb98320395e8b1cc0beaa87122170af10d5aaa573dc89",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/pillar.glb",
+      "bytes": 657648,
+      "sha256": "a5f6cdbdc83955afd3e7370db2a51fedb60d119222edd45dd7d3c8ff44374770",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/pillar_low.glb",
+      "bytes": 616364,
+      "sha256": "46bfe754b3391e7caf8e4ee620204fcf1db876236afb513a72018b7bd6200272",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/rubble.glb",
+      "bytes": 365064,
+      "sha256": "048691ce23f2eec2bc82aae122d82c505ec485afd15941ce9e72cb324e379b15",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sarcophagus.glb",
+      "bytes": 234728,
+      "sha256": "07cb72fe4146b26d2f5c611a2f7a061245eb2f5827de09c2be4fb78d18c17d22",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/stairs_down.glb",
+      "bytes": 333956,
+      "sha256": "08de437a3b4e64355577e21dd32ced3847d480163fba4e45160016c14700c695",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_debris.glb",
+      "bytes": 427572,
+      "sha256": "21a08aadbb9f74a5f9eb76ee5404b31bb84532bc4a0614ada85061bc8baead81",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_floor_a.glb",
+      "bytes": 848496,
+      "sha256": "aefa356d445f78213da4a0e86859c782256a8ef69de1cf58686c349d9a9e3467",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_floor_a_depth.png",
+      "bytes": 223164,
+      "sha256": "f0cc8ca9df05cf80c2e8ece4832f370f28aa4980875d0c03734bebaa9e104f0a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_floor_b.glb",
+      "bytes": 836996,
+      "sha256": "24edb17ae9aef4d18a3a442597b47da981502fd629a33853e53673759e196613",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_floor_b_depth.png",
+      "bytes": 212316,
+      "sha256": "60a0da784a4520784bbdad7c10d41c1f9aaa83e66adfe0e7210209d3b71879a0",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_floor_c.glb",
+      "bytes": 912340,
+      "sha256": "66dab384b26aaf1e25a7e9d6fa2f400ee5dc533fe13a8aaaa2f337875b533d34",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_floor_c_depth.png",
+      "bytes": 228810,
+      "sha256": "258bd49e0e097850e9b1a756fe59fcc6b0ba8d67e0961e2c7a3ed46f4a6c751c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_grate.glb",
+      "bytes": 318280,
+      "sha256": "26d86b99f08762d9777e4b894883bd0714a0486c4ebc817d8678936e1dce0f96",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_pillar.glb",
+      "bytes": 678816,
+      "sha256": "80b38e28ff6312d5e84eddfe0f7398705ebc581c29f5945255dc3315aba3d0be",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_pillar_low.glb",
+      "bytes": 705864,
+      "sha256": "b4635b49e46cfda4b09ac0574f30d47e692bef939e06f4c7307a751d6c47589b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_wall.glb",
+      "bytes": 618276,
+      "sha256": "1c8000e165556e21b5f7b308672a090fca39e192771721b26dd9589443195efe",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_wall_b.glb",
+      "bytes": 662500,
+      "sha256": "377fcbd68f55200df52b7782ddc801cbc3e25835151e18c4cae7acb546b1f912",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/sunken_wall_low.glb",
+      "bytes": 778392,
+      "sha256": "5f1f7e53933f105be2d918912f1351a830331facf9d1f20f70e3f3bd17146191",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_briar.glb",
+      "bytes": 451072,
+      "sha256": "56cc227c97eaa7ed86526950bbe0c6637f4f78d39971c620c33a3a93928a6593",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_censer.glb",
+      "bytes": 361964,
+      "sha256": "36fd145626948f49a191a2ed95c751dd1c905a66d13e12c026621f2b3b278b17",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_choir.glb",
+      "bytes": 309116,
+      "sha256": "6d383a5c541fb23161ab745291b94b19b54992e258e2efbe04071dcca25aab17",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_floor_a.glb",
+      "bytes": 593024,
+      "sha256": "f96e244830216cc116b34a70e4dbc59cc7fe8d6ae38cfe74f4c27768ad5f238b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_floor_a_depth.png",
+      "bytes": 57674,
+      "sha256": "bd09a8b8f490d2bf2b7f598e7967bdfe19a726d328af64e46a0324e00836ba67",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_floor_b.glb",
+      "bytes": 630536,
+      "sha256": "4759649375fed11167d41052ac9c101ab116fc03e41031e163d9b72751c66016",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_floor_b_depth.png",
+      "bytes": 84261,
+      "sha256": "d9ddceef679ef738539e0cdf631637a09d60c4c620d33535cb3981034bb89783",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_floor_c.glb",
+      "bytes": 1080496,
+      "sha256": "100fc2fb6c12a016fb41e91eaca61c6d5ffb5238261549abd15327329c77b88b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_floor_c_depth.png",
+      "bytes": 119436,
+      "sha256": "09831a7a40d3827527bc5c5c6cb62fc1914103d96ed30de917b81ef4a5d001cd",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_pillar.glb",
+      "bytes": 1067512,
+      "sha256": "127752c756d04b837a057542d4ef157fa3205b2e74a6f2ed20b36dba1041648b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_pillar_low.glb",
+      "bytes": 848348,
+      "sha256": "33fef9695286ffb565306bd5af45b69a4ea07d44f904128902254c89ca48dbcb",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_reliquary.glb",
+      "bytes": 313384,
+      "sha256": "99d739e55266096febc287f57fb04a969a18ceba44df1e548be690583037065e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_roses.glb",
+      "bytes": 461280,
+      "sha256": "21157d9a0d081a2c868232f1e37f2da230b5fe5e387576284b84af54ff1cf11e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_shrine.glb",
+      "bytes": 327784,
+      "sha256": "469761c6a7c474e0da0e439b96d8d0cd7271167aa9ab275f287a22fac88fb8b2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_wall.glb",
+      "bytes": 974860,
+      "sha256": "efaf2d32ccbba143fe96477b1ce2e7d34edf0175ece12ce95794e70574c02936",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_wall_b.glb",
+      "bytes": 1029644,
+      "sha256": "20359b222f8d3a5fac8a59367b58ed8f664f1f8bb569c8452462d4b66cb250c6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_wall_c.glb",
+      "bytes": 764760,
+      "sha256": "43409d1fd69dac50bfc46d0ce1f4cca37a0ed0f299c33de8294af10d653554bf",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/thorn_wall_low.glb",
+      "bytes": 942332,
+      "sha256": "6470f65b621ff793cfda23be4c99bd50296d6f50ef9a2a5b7ee19d08bfd2100e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/throne.glb",
+      "bytes": 494080,
+      "sha256": "4ee70dae120db7e260b48f63affa406573a3141b8f4c2e5c72efbd9169c66404",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/torch_wall.glb",
+      "bytes": 917692,
+      "sha256": "34b9981d49e2561318f86ac3c20610f4b7e6168b9a008e49513fe854f1dd9a33",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/wall.glb",
+      "bytes": 584696,
+      "sha256": "488603d5b2a8c7a17bd131d3e2c73a007b7d8c28c836cd18862a70dc5a1a7935",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/wall_b.glb",
+      "bytes": 528836,
+      "sha256": "8bf7628e31304eff96cf69054073cb79a806831394409e1e1bbcb1f0a2651428",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/wall_door.glb",
+      "bytes": 625792,
+      "sha256": "db0de146f66f7d722780f05bbf63fcc6236e072af13ee183c374a3d41badc281",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/wall_low.glb",
+      "bytes": 784556,
+      "sha256": "39b92bcd2266b61151a37942abcad53533e4075b8c29b847904b22c1c685ecc4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/env/weapon_rack.glb",
+      "bytes": 302496,
+      "sha256": "0d0fcedd2f5481aa58399edf0ba85f84e97a8062135ca3d2c7c62f7b325406d8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/axe_bearded.glb",
+      "bytes": 522740,
+      "sha256": "60df1fc7f792f7af0b95bf1a768398911a619246186d232c0ebf520961bf369b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/axe_double.glb",
+      "bytes": 562392,
+      "sha256": "fb27c9909f3f665d22a08cc73628c67926c2986427b9f047c8894dd7c7e0c86d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/axe_skullsplitter.glb",
+      "bytes": 592840,
+      "sha256": "166a6b11cfbd26b0b13957e310ecb982469fc79f522d29809333f11b09fa2f7d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/boots_fur.glb",
+      "bytes": 667892,
+      "sha256": "be63bc0819d32d50618b99191b9811b2566620e7e27e7121a22b038c25fd9ca5",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/boots_greaves.glb",
+      "bytes": 622916,
+      "sha256": "a605bb9a24322f1a9254e50d00f889ed8393f74cad03fa7755a4df1a4d2f79d9",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/boots_stormstride.glb",
+      "bytes": 645660,
+      "sha256": "b5e4454bcee1df22c02c334c366351ef2b1b3975175e8fc0637c3e30ab3ddc1f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/chest_bulwark.glb",
+      "bytes": 1211236,
+      "sha256": "49ffd70f63648c6f9a7332c32d1ac762605e116d43d6e3027755363136dfdd6b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/chest_leather.glb",
+      "bytes": 1155588,
+      "sha256": "09525947b96b2ef616d1137cc9b6d4fe730ed79bec8880a21c804f9019f6f489",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/chest_plate.glb",
+      "bytes": 1089728,
+      "sha256": "81205768a6a819fd1d32230920df162c869ff734e2cd5acdaa040cfdf5851a54",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/chest_scale.glb",
+      "bytes": 1208784,
+      "sha256": "ea8f95738d30d24b4dd9660feaf24fb90e8665483556eb5c46304827e962cae7",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/gloves_gauntlet.glb",
+      "bytes": 439584,
+      "sha256": "640cae0a5e29749982da438725a13866ebbf81428d2313c4707959def815e9ad",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/gloves_hellforged.glb",
+      "bytes": 685456,
+      "sha256": "43dd276494af994fe6fd3d0cb85bfb63d67c623f7a0d028c5eb378ca55a9d92a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/gloves_wraps.glb",
+      "bytes": 719452,
+      "sha256": "b6201c294f9c424ad6f31d2d18714412e29f3d62d35dea89e8440fc90ab394a2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/helm_horned.glb",
+      "bytes": 472860,
+      "sha256": "a1805ecb6007ead7a3b7ed3b1c83f9e21594949ac44ed319ea0c12370c72c890",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/helm_spangen.glb",
+      "bytes": 600680,
+      "sha256": "4cadd00ea0e795844c54de456a43eb4269f086fc7a64d9eb04dc9c821cfbaf67",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/helm_warden_crown.glb",
+      "bytes": 641448,
+      "sha256": "2fc910e53657d5cfa3e8e0f3cc49e228ed44ec967c107c73d7eb8a1601a13723",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/helm_wolf.glb",
+      "bytes": 535148,
+      "sha256": "4b29425a29cf0988f1902814d23ce46ca6bfafd0adcbdd9c87c37ef07ade8662",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/mace_hammer.glb",
+      "bytes": 494924,
+      "sha256": "c6e97905c83b0b6aae37860c146d5a1447df49b46c1161c30f2fb482e1e8194a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/mace_spiked.glb",
+      "bytes": 664516,
+      "sha256": "4809bee0a89917ae395ac31091cbf0a38f37d3a8397a0d1aa8e8cfceef256d18",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/sword_flamberge.glb",
+      "bytes": 550428,
+      "sha256": "a46938efa9b4979e540e573cdb76823e78047435609991d050fbc23e7fef4515",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/sword_notched.glb",
+      "bytes": 224772,
+      "sha256": "8249b5e7140cecc3aed9f9b8ec7a684a26bec2e53b9ebfaf4f68e1efc67f9a93",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/hero/sword_runed.glb",
+      "bytes": 560112,
+      "sha256": "9d4c8b232b0c982878dec70615e40b13e4ee76e4d425c9f47be9f270e774c715",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/boots_fur.glb",
+      "bytes": 601036,
+      "sha256": "a8d9d8390889282953fd4f4a40f7322b0709b118e8d71b41a61eed4f92461808",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/boots_greaves.glb",
+      "bytes": 475760,
+      "sha256": "af3fc2123c5578e816e4b2e9f5199fef09dee745d846b86e39746b0d47abf2ba",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/boots_stormstride.glb",
+      "bytes": 611024,
+      "sha256": "6ad62c83e24ed672d80bca32a2d1e1b14a7e84b98b28f1c22cde745fb9349c6d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/chest_bulwark.glb",
+      "bytes": 1196816,
+      "sha256": "0c9e8ce3aced0e6abc0943464b518f07bc11680549bf765187ed3066cc6272fc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/chest_leather.glb",
+      "bytes": 1154424,
+      "sha256": "0b3bee091210b0ad665ec3c860809f55c2399b5df97d4049304111e4aaae71e2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/chest_mantle.glb",
+      "bytes": 1075264,
+      "sha256": "4d198f49e73c442b233c74c645d6ec0f13c3d20f0171b11b04a9a6400f1fbfe6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/chest_plate.glb",
+      "bytes": 1096760,
+      "sha256": "dda29eb3397beed99f200446d568945c330025eaee6a520dd35583c932a2db55",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/chest_scale.glb",
+      "bytes": 1219188,
+      "sha256": "1f066776b52e2ca7a0388d7ddbddcfad2431ab3f3841a72756ffc55d9be8d3d6",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/gloves_gauntlet.glb",
+      "bytes": 426972,
+      "sha256": "109814af43805666006175c2f6d07b70acdaf299a2f7b9faa28d757ede73601c",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/gloves_hellforged.glb",
+      "bytes": 710788,
+      "sha256": "b050ca5a1a1c8904f49eac0ae22dce25a288e0b6374a546ec522f0b05859beb4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/gloves_wraps.glb",
+      "bytes": 717128,
+      "sha256": "ecfb6a7ff0f92b08e49b479b1018807991f4a02ba381404f006e0b0f5e08c245",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/helm_circlet.glb",
+      "bytes": 409256,
+      "sha256": "c5a607a7854842c6d692fc0636aa170da06adb2c8dcb13613f2326839f327cc2",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/helm_cowl.glb",
+      "bytes": 417936,
+      "sha256": "1a461ba3278b75127ea28bec89cf4ba209323946aad2dfa0909915a45087094b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/helm_horned.glb",
+      "bytes": 474088,
+      "sha256": "bd88430e0eac55277b20f354704b10d77536f8437751bf2637f4ade39e91e43d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/helm_spangen.glb",
+      "bytes": 586600,
+      "sha256": "136f5112046a7342d9458beeefffc75fd3795d56cd960a86836d1c3c2e43472e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/helm_warden_crown.glb",
+      "bytes": 628384,
+      "sha256": "c124e5564fe6f577582485f52fa80a6d414e96526cd9c6ec63d105c0fa0be51b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/helm_wolf.glb",
+      "bytes": 533484,
+      "sha256": "be60f31b08a7fb2daf1eeb7a9dc0702619941bd31ad833066e6adf38ea314a61",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/staff_bone.glb",
+      "bytes": 791268,
+      "sha256": "b94b8aa20b9bdabc8a683e768ca9f0ecf552053ce05ed24eb857088fcf55c644",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/staff_crystal.glb",
+      "bytes": 457712,
+      "sha256": "d42e8d862a84c150bc3387e068832712afbd43c6d0d164eb0050e7d356878ea3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/staff_gnarled.glb",
+      "bytes": 471528,
+      "sha256": "3f1932f7a074943301d95a89ce1b1acd27b0944d3f566592c7f452dbaa895974",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/gear/sorcerer/staff_voidstar.glb",
+      "bytes": 688616,
+      "sha256": "0f390536edf71a90bfbd86f623176fd2d97efb73aa42fcf928ca1ff27c9358a4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/items/amulet.glb",
+      "bytes": 625624,
+      "sha256": "0a1e3b1630f97520b16efb2d47a57bce35c70d1d16c85abb3fba0e616ca9ce87",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/items/gold.glb",
+      "bytes": 1599280,
+      "sha256": "87c7f30ee51e6180443537c3cd5c6b0e15c1ab16d83d2a0381a6a57dde60329d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/items/potion.glb",
+      "bytes": 365544,
+      "sha256": "50955334f130e6b4e3c46f091024d196f99d41483abb578431d00ecb29b38a23",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/models/items/ring.glb",
+      "bytes": 214012,
+      "sha256": "2ebc03c8b42bb2d0f59e3910076200af06fb2a66f9d8aebf41d87bc4b53643f1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/shaders/character.wgsl",
+      "bytes": 2876,
+      "sha256": "71deaec1100e5c6428008058578c1105042090634ced9fa2ba544f1354a4fb6f",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/shaders/fx.wgsl",
+      "bytes": 5359,
+      "sha256": "41ae026650b540be526a9a2d286bc56d7dfdf6b5816bf0bcd6f7ee722e9a2084",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/shaders/occluder.wgsl",
+      "bytes": 2922,
+      "sha256": "0d64346c7577e4e793f900a47aea323d93586cd80baea45a0331e8859073f275",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/shaders/orb.wgsl",
+      "bytes": 2635,
+      "sha256": "3984b9f4b898b565ef603a62d9c8b49cc28ef9a5739e22bd231f13e85b3eb1b8",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/shaders/spell.wgsl",
+      "bytes": 9544,
+      "sha256": "e0f7afba81ffeb1a3750f2649f84d6553928abefbcfddcd599f854ed66a1d9ec",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cursor.png",
+      "bytes": 3561,
+      "sha256": "26c7b48b1ace668c223d7b264d53819f23fbc8d20b1e8bbdee171f976bd77a7a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cutscene_abyss.jpg",
+      "bytes": 468006,
+      "sha256": "86e02034df96f7ca5fde95defb09e460fe172ceabae85324c2f51b425e9fccde",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cutscene_drowned.jpg",
+      "bytes": 508243,
+      "sha256": "1ae3a7ac32d8e38a728ef112dc86de8137f685564cbc9956143f90032d90dddc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cutscene_foundry.jpg",
+      "bytes": 626101,
+      "sha256": "dcfa397caf92e39c450c0047d17953d23c04f16211afdeaecb0614aa4dfd25ff",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cutscene_seal.jpg",
+      "bytes": 510719,
+      "sha256": "9ca6fb2c2097a505b1355f78d86e77da10fec12f10b5cfd19a56f77f2d2b0490",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cutscene_thorn.jpg",
+      "bytes": 521841,
+      "sha256": "0d66670227769af69b0b7b5e47ef589439feb186428e59c44dc19fb7e4c47ea1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/cutscene_wardens.jpg",
+      "bytes": 557581,
+      "sha256": "a94a9884827f388810f4e758914d4ae8c6f8502283c8dc5ee7bdd5d53cecbfe1",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/ending_dawn.jpg",
+      "bytes": 725416,
+      "sha256": "2a3ea8e8d6860e081041d6b7cf03d7be3b330ded96f5ab3ae9d5f60d07e1b51d",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/ending_fall.jpg",
+      "bytes": 571369,
+      "sha256": "6d3263c86d0dc58fb40dade2c91d16ce4742bb5fc9167971bfcf76f6f83caaf3",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/hud_bar.png",
+      "bytes": 497801,
+      "sha256": "09c4b700ae6c450e42e1a7bb17d7bb65c8dc85ba43448e72fd0c71e989ed4e57",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/intro_binding.jpg",
+      "bytes": 657756,
+      "sha256": "1b6cae737e4547d5d88d9147576a9a7dd74148238ee0602d03c2d3ad3b0f07a4",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/intro_kingdom.jpg",
+      "bytes": 451452,
+      "sha256": "e7c67780bda4aa3fc14461de3a6d07e5df0555ad28debafcdf8f85458a64dd78",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/map_fog.png",
+      "bytes": 170878,
+      "sha256": "004101d35936754db8632ef39da55140ae78cd76223679e7e6d28c2043800f2a",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/map_token.png",
+      "bytes": 9570,
+      "sha256": "1209f61c51165b89ea6931bbbc0bf2cb0251efedfd22463947a5bdded02f47fc",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/orb_frame.png",
+      "bytes": 177918,
+      "sha256": "7c422edb648855e151aa9917e74ee68dde5248874513039d276e1021104f4a83",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/panel.png",
+      "bytes": 91887,
+      "sha256": "95ccff2624cbb394162fccdb2f0d336f123cafa60f5c63b078022ff21ebc4e98",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/skill_slot.png",
+      "bytes": 14188,
+      "sha256": "cc9efdbe82391930b5d47fbb820381f0f0742eb8f7b8adc33b2b09d492fdb011",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/tooltip.png",
+      "bytes": 15932,
+      "sha256": "b2b569b02342f91555a542e7b7e0f04308f46c73a6f97f838b287b2075c46f4b",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/worldmap.jpg",
+      "bytes": 1112615,
+      "sha256": "0eb0d53e6d27a617a356c4c04eee63bba0f235ac4c06d47f723bb7aed360827e",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "assets/ui/worldmap_blank.jpg",
+      "bytes": 631508,
+      "sha256": "ea02bad410174248392e60eca8feed241eddf0db1baa6ee852551dcde0606d48",
+      "rendered": false,
+      "reason": "binary asset payload — recorded hashed, never rendered"
+    },
+    {
+      "capture": "olbaid_bg.wasm",
+      "bytes": 34721008,
+      "sha256": "32b56735c243828e22d2952d7ce56786586936a75553dc1dac60e582ec139aa8",
+      "rendered": false,
+      "reason": "engine payload (Rust/wasm, build-artifact) — recorded hashed, never rendered or re-encoded (engine-build precedent)"
+    }
+  ]
+}
