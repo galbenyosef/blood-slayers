@@ -9,7 +9,7 @@
       "reason": "index.html's local-testing branch (?mock=1) dynamically imports ./mock-wavedash.js — the file is NOT in the uploaded build (probed 404 on the CDN host), so the mirror cannot carry it; the branch is inert unless the query param is set. Recorded gap, whitelisted from the import-resolution rule."
     }
   ],
-  "note": "BLOOD SLAYERS (https://wavedash.com/games/blood-slayers) is capture-class: a WebGPU game on the Wavedash platform, served by a per-build CDN host (mx74mmkghvsq6thc1e56jtkkb18ft2yc-<user-hash>-<build-hash>.builds.wavedashcdn.com) behind a platform session (playKey → embed → gameplay JWT). §0.4 fork-over-mirror was checked on 2026-10-13 — the project publishes no source repository, so the mirror stands. Derived pipeline: capture → pinned prettier 3.9.6 (module API, default options, single pass verified idempotent — never the CLI: it respects .gitignore and can silently echo its input) → readable/<tag>.pretty.js|css per captured JS/CSS file (repo-root-relative, dirs flattened with __; every pretty provably NOT byte-identical to its capture source) → statement-aligned slices src/<tag>-NN.js of the app-side JS (olbaid.js wasm-bindgen glue, the three snippets/ shims, and the inline scripts of index.html/embed) at top-level declaration boundaries, ~250-350 line windows (oversized single declarations stay whole) with an exact 2-line provenance header. Every slice parses standalone under `node --input-type=module --check -` and round-trips byte-exact to its recorded readable line range. Vendor rule — wholeFile sections, never sliced: embed.js (the Wavedash platform SDK) and sw-embed.js (its embed service worker) are third-party platform runtime; machinery/stylesheet rule — embed.css is wholeFile. Non-standalone parts are skipped sections: a final pure export {…} table, if present. Payload rule (engine-build precedent): olbaid_bg.wasm and every file under assets/** are recorded in notRendered with size + sha256 — never prettified, re-encoded or otherwise rewritten; a naive static server serves them raw and byte-exact. Identifiers in src/ are the wasm-bindgen glue's own names — the identifier-rename campaign (PLAN §5) is recorded as an open task in README.md, not claimed here. Capture bytes are untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. `node tools/audit.js` is the gate.",
+  "note": "BLOOD SLAYERS (https://wavedash.com/games/blood-slayers) is capture-class: a WebGPU game on the Wavedash platform, served by a per-build CDN host (mx74mmkghvsq6thc1e56jtkkb18ft2yc-<user-hash>-<build-hash>.builds.wavedashcdn.com) behind a platform session (playKey → embed → gameplay JWT). §0.4 fork-over-mirror was checked on 2026-10-13 — the project publishes no source repository, so the mirror stands. Derived pipeline: capture → pinned prettier 3.9.6 (module API, default options, single pass verified idempotent — never the CLI: it respects .gitignore and can silently echo its input) → readable/<tag>.pretty.js|css per captured JS/CSS file (repo-root-relative, dirs flattened with __; every pretty provably NOT byte-identical to its capture source) → statement-aligned slices src/<tag>-NN.js of the app-side JS (olbaid.js wasm-bindgen glue, the three snippets/ shims, and the inline scripts of index.html/embed) at top-level declaration boundaries, ~250-350 line windows (oversized single declarations stay whole) with an exact 2-line provenance header. Every slice parses standalone under `node --input-type=module --check -` and round-trips byte-exact to its recorded readable line range. Vendor rule — wholeFile sections, never sliced: embed.js (the Wavedash platform SDK) and sw-embed.js (its embed service worker) are third-party platform runtime; machinery/stylesheet rule — embed.css is wholeFile. Non-standalone parts are skipped sections: a final pure export {…} table, if present — the tail records the served chunk's own export statement as its `text`, so the export gate compares the reading copy's rendered table against the served chunk instead of reporting that table unchecked. Whole-file sections name the SERVED capture path in `file` (the old name was a label the generator invented — no such file existed), so the export gate can resolve the text behind them. Payload rule (engine-build precedent): olbaid_bg.wasm and every file under assets/** are recorded in notRendered with size + sha256 — never prettified, re-encoded or otherwise rewritten; a naive static server serves them raw and byte-exact. Identifiers in src/ are the wasm-bindgen glue's own names — the identifier-rename campaign (PLAN §5) is recorded as an open task in README.md, not claimed here. Capture bytes are untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. `node tools/audit.js` is the gate.",
   "renderOptions": {
     "_default": "prettier 3.9.6, module API, default options, single pass (re-format verified idempotent at derive time) — never the CLI: it respects .gitignore and can silently echo its input",
     "js": "parser babel, no plugins",
@@ -95,6 +95,9 @@
       "tag": "embed",
       "slices": 0,
       "derived": "readable only (vendor bundle, wholeFile)",
+      "wholeFileSection": {
+        "file": "embed.js"
+      },
       "what": "Wavedash platform SDK"
     },
     {
@@ -110,6 +113,9 @@
       "tag": "sw-embed",
       "slices": 0,
       "derived": "readable only (vendor bundle, wholeFile)",
+      "wholeFileSection": {
+        "file": "sw-embed.js"
+      },
       "what": "Wavedash embed service worker"
     },
     {
@@ -124,7 +130,10 @@
       "idempotent": true,
       "tag": "embed",
       "slices": 0,
-      "derived": "readable only (stylesheet, wholeFile)"
+      "derived": "readable only (stylesheet, wholeFile)",
+      "wholeFileSection": {
+        "file": "embed.css"
+      }
     },
     {
       "sourceFile": "readable/embed-inline-1.pretty.js",
@@ -232,12 +241,14 @@
       "file": "olbaid-tail-export.js",
       "skipped": true,
       "title": "olbaid — final export table (not sliced)",
-      "desc": "Lines 5971-5971. The module's final export {…} table — the exported bindings live in the earlier slices; a standalone tail carries no new statements, so it is indexed only.",
+      "desc": "Lines 5971-5971. The module's final export {…} table — the exported bindings live in the earlier slices; a standalone tail carries no new statements, so it is indexed only. The tail records the served chunk's own export statement (olbaid.js) as its text — the statement the reading copy's table must still match.",
       "startLine": 5971,
       "endLine": 5971,
       "sourceFile": "readable/olbaid.pretty.js",
+      "capture": "olbaid.js",
       "firstLine": "export { initSync, __wbg_init as default };",
-      "lastLine": "export { initSync, __wbg_init as default };"
+      "lastLine": "export { initSync, __wbg_init as default };",
+      "text": "export { initSync, __wbg_init as default };"
     },
     {
       "file": "snippets__olbaid-abdb8433e54eccc9__inline0-01.js",
@@ -272,34 +283,37 @@
       "sourceFile": "readable/snippets__olbaid-abdb8433e54eccc9__web__olbaid_save.pretty.js"
     },
     {
-      "file": "embed-vendor.js",
+      "file": "embed.js",
       "wholeFile": true,
       "title": "embed — Wavedash platform SDK (vendor runtime, whole-file, never sliced)",
       "desc": "Lines 1-23054 of readable/embed.pretty.js: The Wavedash platform SDK that the embed shell loads: iframe/parent messaging, lobby + P2P matchmaking bridge, Convex client wiring, cloud-save (userfs) and UGC managers, audio routing, progress reporting. Third-party platform runtime, not game code. Vendor rule — indexed whole-file in readable/, never sliced or rewritten.",
       "note": "whole-file (vendor/stylesheet rule): indexed in readable/, never sliced",
       "startLine": 1,
       "endLine": 23054,
-      "sourceFile": "readable/embed.pretty.js"
+      "sourceFile": "readable/embed.pretty.js",
+      "capture": "embed.js"
     },
     {
-      "file": "sw-embed-vendor.js",
+      "file": "sw-embed.js",
       "wholeFile": true,
       "title": "sw-embed — Wavedash embed service worker (vendor, whole-file, never sliced)",
       "desc": "Lines 1-1828 of readable/sw-embed.pretty.js: The service worker the embed shell registers at the build-host origin scope: it attaches the gameplay-JWT Authorization header to every build-file request, handles POST /auth/refresh, and caches immutable build files (build-file-cache). Platform machinery — indexed whole-file in readable/, never sliced or rewritten.",
       "note": "whole-file (vendor/stylesheet rule): indexed in readable/, never sliced",
       "startLine": 1,
       "endLine": 1828,
-      "sourceFile": "readable/sw-embed.pretty.js"
+      "sourceFile": "readable/sw-embed.pretty.js",
+      "capture": "sw-embed.js"
     },
     {
-      "file": "embed-stylesheet.css",
+      "file": "embed.css",
       "wholeFile": true,
       "title": "embed — stylesheet (whole-file, never sliced)",
       "desc": "Lines 1-636 of readable/embed.pretty.css. Whole-file (stylesheet rule): the capture stylesheet is indexed whole in readable/, never sliced.",
       "note": "whole-file (vendor/stylesheet rule): indexed in readable/, never sliced",
       "startLine": 1,
       "endLine": 636,
-      "sourceFile": "readable/embed.pretty.css"
+      "sourceFile": "readable/embed.pretty.css",
+      "capture": "embed.css"
     },
     {
       "file": "embed-inline-1-01.js",
@@ -310,14 +324,15 @@
       "sourceFile": "readable/embed-inline-1.pretty.js"
     },
     {
-      "file": "index-inline-1.css",
+      "file": "readable/index-inline-1.pretty.css",
       "wholeFile": true,
       "title": "index-inline-1 — inline style block (whole-file, never sliced)",
       "desc": "Lines 1-106 of readable/index-inline-1.pretty.css. Whole-file: the document's inline style block (2018 B at bytes 399-2417 of index.html) is indexed whole and never sliced.",
       "note": "whole-file (inline style block, not sliced)",
       "startLine": 1,
       "endLine": 106,
-      "sourceFile": "readable/index-inline-1.pretty.css"
+      "sourceFile": "readable/index-inline-1.pretty.css",
+      "capture": "index.html"
     },
     {
       "file": "index-inline-1-01.js",

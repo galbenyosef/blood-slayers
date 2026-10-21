@@ -174,6 +174,55 @@ function markers(text, n = 2) {
 }
 const markerText = (ms) => ms.map(([w, c]) => `${w}(${c})`).join(", ");
 
+// ── the served chunk's own export statement (the export gate's tail) ────
+/**
+ * The public names of an `export { … }` list: the ALIAS, not the local — the
+ * alias is the name the chunk exports.
+ */
+function exportListNames(text) {
+  const out = new Set();
+  for (const m of text.matchAll(/export\s*\{([^}]*)\}/g)) {
+    for (const part of m[1].split(",")) {
+      const seg = part.trim();
+      if (!seg) continue;
+      const as = seg.split(/\s+as\s+/);
+      out.add((as.length === 2 ? as[1] : seg).trim());
+    }
+  }
+  return out;
+}
+
+/**
+ * The SERVED chunk's own export statement — the capture-side text the
+ * reading copy's rendered table must still match.
+ *
+ * A skipped tail carries no file: the export list at the end of a module
+ * references bindings declared in earlier slices, so it does not parse alone
+ * and the layer never fabricates it. The public-export-name gate therefore
+ * has no derived text for that table and reports it UNCHECKED — unless the
+ * tail records one. `text` is that text: the capture's own export statement,
+ * so the two sides of the gate's comparison are two DIFFERENT files (the
+ * served chunk's raw statement and the reading copy's rendering of it)
+ * instead of the pristine compared with itself.
+ *
+ * The statement is matched by its PUBLIC NAMES, so a fragment of a string that
+ * happens to contain `export {` is never mistaken for it, and nothing is
+ * invented: when the capture carries no statement with the tail's names, the
+ * tail stays a plain skipped record and the gate keeps reporting it unchecked.
+ */
+function captureExportStatement(captureText, tailText) {
+  const want = exportListNames(tailText);
+  if (!want.size) return null;
+  let found = null;
+  for (const m of captureText.matchAll(/export\s*\{[^}]*\}\s*;?/g)) {
+    const names = exportListNames(m[0]);
+    if (names.size !== want.size) continue;
+    if (![...want].every((n) => names.has(n))) continue;
+    found = m[0];
+  }
+  return found;
+}
+
 // ── windowize: cut only at statement starts; ≤350 lines, a single ───────
 // ── oversized declaration is a window of its own ────────────────────────
 function windowize(stmts) {
@@ -336,11 +385,20 @@ async function main() {
       /^export\s*\{[\s\S]*\}\s*;?$/.test(lastStmt.text.trim()) &&
       !/\bfrom\b/.test(lastStmt.text)
     ) {
+      // the SERVED chunk's own export statement: the tail records it as its
+      // text, so the export gate compares the reading copy's rendered table
+      // against the served chunk instead of the pristine with itself
+      const served = captureExportStatement(text, lastStmt.text);
       claim(stmts.length - 1, stmts.length - 1, {
         kind: "skip",
         file: `${tag}-tail-export.js`,
         title: `${tag} — final export table (not sliced)`,
-        desc: `Lines ${lastStmt.startLine}-${lastStmt.endLine}. The module's final export {…} table — the exported bindings live in the earlier slices; a standalone tail carries no new statements, so it is indexed only.`,
+        desc:
+          `Lines ${lastStmt.startLine}-${lastStmt.endLine}. The module's final export {…} table — the exported bindings live in the earlier slices; a standalone tail carries no new statements, so it is indexed only.` +
+          (served
+            ? ` The tail records the served chunk's own export statement (${rel}) as its text — the statement the reading copy's table must still match.`
+            : ""),
+        ...(served ? { text: served } : {}),
       });
     }
 
@@ -401,8 +459,10 @@ async function main() {
           startLine: b.A,
           endLine: b.B,
           sourceFile,
+          capture: rel,
           firstLine: lines[b.A - 1],
           lastLine: lines[b.B - 1],
+          ...(b.text ? { text: b.text } : {}),
         });
       }
     }
@@ -447,7 +507,12 @@ async function main() {
       ? `Lines 1-${lines.length} of ${sourceFile}: ${cls.desc}`
       : `Lines 1-${lines.length} of ${sourceFile}. Whole-file (stylesheet rule): the capture stylesheet is indexed whole in readable/, never sliced.`;
     sections.push({
-      file: cls ? `${tag}-vendor.js` : `${tag}-stylesheet.css`,
+      // `file` names the SERVED path of the whole file — the capture itself is
+      // the only whole artifact this render has, and the export gate reads it
+      // as the derived text of the whole-file section. The old name was a
+      // label the generator invented (no such file existed), so the gate could
+      // resolve neither the derived text nor the capture behind it.
+      file: rel,
       wholeFile: true,
       title,
       desc,
@@ -455,6 +520,7 @@ async function main() {
       startLine: 1,
       endLine: lines.length,
       sourceFile,
+      capture: rel,
     });
     sources.push({
       sourceFile,
@@ -469,6 +535,10 @@ async function main() {
       tag,
       slices: 0,
       derived: cls ? "readable only (vendor bundle, wholeFile)" : "readable only (stylesheet, wholeFile)",
+      // the whole-file link names the capture this render was rendered from,
+      // so the export gate compares the reading copy against a DIFFERENT file
+      // (the served chunk) instead of the reading copy with itself
+      wholeFileSection: { file: rel },
       ...(cls ? { what: cls.what } : {}),
     });
     console.log(`derive: ${rel} -> ${sourceFile} (${lines.length} lines, wholeFile ${cls ? "vendor" : "stylesheet"})`);
@@ -542,7 +612,11 @@ async function main() {
       // JS inline blocks slice like any app file; CSS inline blocks are wholeFile
       if (isStyle || b.kind === "importmap") {
         sections.push({
-          file: `${tag}.${ext}`,
+          // an inline block has no file of its own in the capture: the derived
+          // text IS the readable twin, so it is named by its real path (the
+          // old name was a label the generator invented — no such file
+          // existed)
+          file: `readable/${prettyFile}`,
           wholeFile: true,
           title: `${tag} — inline ${b.kind} block (whole-file, never sliced)`,
           desc: `Lines 1-${lines.length} of readable/${prettyFile}. Whole-file: the document's inline ${b.kind} block (${b.bytes} B at bytes ${b.contentStart}-${b.contentEnd} of ${rel}) is indexed whole and never sliced.`,
@@ -550,6 +624,7 @@ async function main() {
           startLine: 1,
           endLine: lines.length,
           sourceFile: `readable/${prettyFile}`,
+          capture: rel,
         });
         console.log(`derive: ${rel} inline ${b.kind} #${b.block} -> readable/${prettyFile} (${lines.length} lines, wholeFile)`);
         continue;
@@ -578,11 +653,20 @@ async function main() {
       };
       const lastStmt = stmts[stmts.length - 1];
       if (lastStmt && lastStmt.node.type === "ExportNamedDeclaration" && !perInlineCovered[stmts.length - 1] && /^export\s*\{[\s\S]*\}\s*;?$/.test(lastStmt.text.trim()) && !/\bfrom\b/.test(lastStmt.text)) {
+        // the SERVED block's own export statement: the tail records it as its
+        // text, so the export gate compares the reading copy's rendered table
+        // against the served chunk instead of the pristine with itself
+        const served = captureExportStatement(b.text, lastStmt.text);
         claimI(stmts.length - 1, stmts.length - 1, {
           kind: "skip",
           file: `${tag}-tail-export.js`,
           title: `${tag} — final export table (not sliced)`,
-          desc: `Lines ${lastStmt.startLine}-${lastStmt.endLine}. Final export {…} table — indexed only.`,
+          desc:
+            `Lines ${lastStmt.startLine}-${lastStmt.endLine}. Final export {…} table — indexed only.` +
+            (served
+              ? ` The tail records the served block's own export statement (${rel}) as its text — the statement the reading copy's table must still match.`
+              : ""),
+          ...(served ? { text: served } : {}),
         });
       }
       const runs = [];
@@ -636,8 +720,10 @@ async function main() {
             startLine: bl.A,
             endLine: bl.B,
             sourceFile: `readable/${prettyFile}`,
+            capture: rel,
             firstLine: lines[bl.A - 1],
             lastLine: lines[bl.B - 1],
+            ...(bl.text ? { text: bl.text } : {}),
           });
         }
       }
@@ -715,7 +801,12 @@ async function main() {
       "recorded readable line range. Vendor rule — wholeFile sections, never sliced: embed.js (the " +
       "Wavedash platform SDK) and sw-embed.js (its embed service worker) are third-party platform " +
       "runtime; machinery/stylesheet rule — embed.css is wholeFile. Non-standalone parts are skipped " +
-      "sections: a final pure export {…} table, if present. Payload rule (engine-build precedent): " +
+      "sections: a final pure export {…} table, if present — the tail records the served chunk's own " +
+      "export statement as its `text`, so the export gate compares the reading copy's rendered table " +
+      "against the served chunk instead of reporting that table unchecked. Whole-file sections name " +
+      "the SERVED capture path in `file` (the old name was a label the generator invented — no such " +
+      "file existed), so the export gate can resolve the text behind them. Payload rule " +
+      "(engine-build precedent): " +
       "olbaid_bg.wasm and every file under assets/** are recorded in notRendered with size + sha256 — " +
       "never prettified, re-encoded or otherwise rewritten; a naive static server serves them raw and " +
       "byte-exact. Identifiers in src/ are the wasm-bindgen glue's own names — the identifier-rename " +

@@ -205,7 +205,12 @@ untouched — `node tools/verify.mjs` re-hashes all 414 files):
   are never prettified or re-encoded; a naive static server serves them raw).
 - Vendor/machinery rule — wholeFile sections, never sliced: `embed.js` +
   `sw-embed.js` (third-party Wavedash platform runtime) and `embed.css`.
-  One skipped section: a final pure `export {…}` table, if present.
+  One skipped section: a final pure `export {…}` table, if present. The tail
+  records the served chunk's own export statement (`olbaid.js`) as its `text`,
+  so the public-export-name gate compares the reading copy's rendered table
+  against the served chunk instead of reporting that table unchecked; the
+  wholeFile sections name the served capture path in `file`, so the gate can
+  resolve the text behind them.
 - Identifiers in src/ are the glue's own (wasm-bindgen) names — the
   identifier-rename campaign (PLAN §5) is an explicit **open task** for this
   mirror (there is no authored JS app layer to rename beyond the glue).
