@@ -107,6 +107,13 @@ and therefore carries one (long-expired, anonymous-session) `gameplayJwt` +
 - `tools/update.mjs` — read-only drift probe (mints a fresh pk/JWT itself)
 - `tools/verify.mjs` — re-hash the capture against the manifest
 - `tools/audit.js` — integrity gate for the derived layers (`AUDIT PASS`)
+- `tools/check-links.mjs` — the export-binding link gate: does every export
+  table the layer carries name a binding the layer declares? The engine
+  (`node --input-type=module --check -`) is the judge. The wasm module's
+  export table lives in a RECORDED TAIL (`split-spec.json` `sections[].text`),
+  not in a file on disk, so the gate takes those bytes from the mirror's own
+  record. A table that names a binding a SIBLING slice declares is a
+  FRAGMENT, not a defect.
 - `docs/cover.png` — cover (gameplay: the Barbarian-Knight fighting risen
   skeletons in the Forgotten Ossuary, mirror-served), `docs/boot-2026-10-13.png`
   — boot evidence (offline character screen), `docs/network-log-2026-10-13.jsonl`
@@ -160,6 +167,7 @@ cloud saves) and the game degrades to solo play.
 node tools/verify.mjs     # re-hash the capture against the manifest
 node tools/audit.js       # derived-layer integrity gate (AUDIT PASS)
 node tools/check-exports.mjs   # the derived layer still exports every public name
+node tools/check-links.mjs     # every export table names a binding the layer declares (fragments are reported, breaks fail)
 node tools/derive.mjs --check          # the derived layer is current? (compares a fresh rebuild; writes NOTHING)
 ```
 
