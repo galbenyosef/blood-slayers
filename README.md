@@ -161,6 +161,13 @@ require-corp`); the boot below was verified with a static server that mirrors
 them. The platform backend calls fail offline exactly as expected (no roster/
 cloud saves) and the game degrades to solo play.
 
+## Boot test (2026-10-27)
+
+- Entry: `http://127.0.0.1:4730/index.html` served by `tools/serve.mjs` with the network blocked (`MAP * 127.0.0.1`).
+- Outcome: **rendered** — the loader cleared and the WebGPU engine drew the character-creation screen ("CREATE A NEW SLAYER", Barbarian-Knight / Sorcerer cards, "PLAYING SOLO") from the offline capture.
+- Evidence: body 0 chars (canvas-rendered UI); canvas 1262x568; 0 console errors; 1 failed same-origin request, 0 blocked cross-origin; screenshot `docs/boot-2026-10-27.png`.
+- Gaps seen: `/favicon.ico` (browser default request, not part of the capture). The existing "fully playable offline / PLAYING SOLO" claim is confirmed.
+
 ## Verify
 
 ```
