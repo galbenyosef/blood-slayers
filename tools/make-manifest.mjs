@@ -5,7 +5,7 @@ import crypto from "node:crypto";
 
 const root = process.argv[2] || ".";
 const outFile = process.argv[3] || ".upstream/manifest.json";
-const skipDirs = new Set(["tools", "docs", "readable", "src", ".upstream", ".git", "legacy", "node_modules"]);
+const skipDirs = new Set(["tools", "docs", "readable", "src", ".upstream", ".git", "legacy", "node_modules", "tmp"]);
 const skipFiles = new Set([".gitattributes", ".gitignore", "README.md", "_mirror-report.json", "split-spec.json"]);
 const dynamic = new Set(["embed"]); // JWT/sessionToken rotate per response
 
@@ -16,6 +16,9 @@ function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const rel = path.relative(root, path.join(dir, e.name)).split(path.sep).join("/");
     const top = rel.split("/")[0];
+    // dot entries (.git, .upstream, .work, .work-prettier-test.mjs, …) are mirror
+    // machinery or scratch — never capture-layer files, so never manifest them.
+    if (top.startsWith(".")) continue;
     if (skipDirs.has(top) || (e.isDirectory() && skipDirs.has(rel))) continue;
     if (e.isDirectory()) walk(path.join(dir, e.name));
     else {

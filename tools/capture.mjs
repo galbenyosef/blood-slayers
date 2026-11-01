@@ -1,5 +1,5 @@
 // capture.mjs — (re)fetch the BLOOD SLAYERS build closure into the repo root.
-// usage: node tools/capture.mjs [--dry-run]
+// usage: node tools/capture.mjs [--dry-run] [--only <path> …]
 //
 // This is the reproducible record of HOW the capture was assembled (2026-10-13)
 // and the refresh path (PLAN §3): it boots the same platform session a browser
@@ -31,8 +31,14 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const proj = path.resolve(here, "..");
 const DRY = process.argv.includes("--dry-run");
+// `--only a b c` restricts the fetch to the named paths (a targeted re-capture);
+// no --only means the full candidate universe (the closure refresh).
+const onlyAt = process.argv.indexOf("--only");
+const ONLY = onlyAt >= 0 ? process.argv.slice(onlyAt + 1) : null;
 const ORIGIN = "https://wavedash.com";
 const PAGE = "/games/blood-slayers";
+const GAME_SLUG = "blood-slayers";
+const LAUNCH_ENDPOINTS = ["/embed/api/game-launch", "/api/game-launch"];
 const UA = {
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
 };
@@ -116,31 +122,60 @@ function candidates() {
   return [...c].sort();
 }
 
-// ── bootstrap (same mechanics as tools/update.mjs) ──────────────────────
+// ── bootstrap (same mechanics as tools/update.mjs — launch API) ─────────
+// 2026-11-01: the game page is a SvelteKit portal and no longer server-renders
+// `playKey`; the per-load bootstrap (playKey + userId + the authoritative
+// gameBuild/gameCloud) is minted by the player's launch endpoint using the
+// anonymous session cookies the page load sets. See tools/update.mjs.
 async function get(url, headers) {
   const r = await fetch(url, { headers: { ...UA, ...(headers || {}) } });
   return { status: r.status, buf: r.ok ? Buffer.from(await r.arrayBuffer()) : null, headers: r.headers };
 }
+const setCookies = (h) =>
+  typeof h.getSetCookie === "function" ? h.getSetCookie() : [h.get("set-cookie")].filter(Boolean);
 const page = await get(ORIGIN + PAGE);
 if (page.status !== 200) {
   console.error(`live page -> HTTP ${page.status}`);
   process.exit(2);
 }
 const html = page.buf.toString("utf8");
-const playKey = /playKey:"([0-9a-f]+)"/.exec(html)?.[1];
-const gameCloudId = /gameCloud:\{.*?_id:"([^"]+)"/.exec(html)?.[1];
-const gameBuildId = /gameBuild:\{.*?_id:"([^"]+)"/.exec(html)?.[1];
+const ssrCloudId = /gameCloud:\{.*?_id:"([^"]+)"/.exec(html)?.[1];
+const ssrBuildId = /gameBuild:\{.*?_id:"([^"]+)"/.exec(html)?.[1];
 const engine = /gameBuild:\{.*?engine:"([^"]+)"/.exec(html)?.[1] || "CUSTOM";
 const entrypoint = /gameBuild:\{.*?entrypoint:"([^"]+)"/.exec(html)?.[1] || "index.html";
-const anonId = /anonymousUser:\{id:"([^"]+)"/.exec(html)?.[1];
-const anonName = /anonymousUser:\{id:"[^"]+",username:"([^"]+)"/.exec(html)?.[1] || "anonymous";
-if (!playKey || !gameCloudId || !gameBuildId || !anonId) {
-  console.error("could not extract the game bootstrap from the SSR page");
+const cookie = setCookies(page.headers).map((c) => c.split(";")[0]).join("; ");
+if (!ssrCloudId || !ssrBuildId || !cookie) {
+  console.error("could not read the SSR bootstrap/session cookies from the game page");
   process.exit(2);
 }
-const host = `${gameCloudId}-${fnv32(anonId)}-${fnv32(gameBuildId)}.builds.wavedashcdn.com`;
-const sdk = JSON.stringify({ convexCloudUrl: "https://convex-api.wavedash.com", wavedashUser: { id: anonId, username: anonName }, gameCloudId, ugcHost: "ugc.wavedashcdn.com", uploadsHost: "uploads.wavedash.com", launchParams: {}, parentOrigin: "https://wavedash.com", initialVolume: 1 });
-const embed = await get(`https://${host}/embed?entrypoint=${encodeURIComponent(entrypoint)}&engine=${encodeURIComponent(engine)}&pk=${playKey}&sdkconfig=${encodeURIComponent(sdk)}&gameSlug=blood-slayers`);
+let launch = null;
+for (const ep of LAUNCH_ENDPOINTS) {
+  const r = await fetch(ORIGIN + ep, {
+    method: "POST",
+    headers: { ...UA, "Content-Type": "application/json", Origin: ORIGIN, Referer: ORIGIN + "/embed/games/" + GAME_SLUG, Cookie: cookie },
+    body: JSON.stringify({ gameSlug: GAME_SLUG }),
+  });
+  if (r.status === 200) {
+    try { launch = JSON.parse(await r.text()); break; } catch { /* try next endpoint */ }
+  }
+}
+if (!launch || !launch.playKey || !launch.userId || !launch.gameBuild?._id || !launch.gameCloud?._id) {
+  console.error("could not mint the per-load bootstrap from the launch API");
+  process.exit(2);
+}
+if (launch.gameBuild._id !== ssrBuildId || launch.gameCloud._id !== ssrCloudId) {
+  console.error("launch build does not match the SSR markup — refusing to capture");
+  process.exit(2);
+}
+const playKey = launch.playKey;
+const gameCloudId = launch.gameCloud._id;
+const gameBuildId = launch.gameBuild._id;
+const anon = launch.anonymousUser || {};
+const anonId = anon.id || launch.userId;
+const anonName = anon.username || "anonymous";
+const host = `${gameCloudId}-${fnv32(launch.userId)}-${fnv32(gameBuildId)}.builds.wavedashcdn.com`;
+const sdk = JSON.stringify({ convexCloudUrl: "https://convex-api.wavedash.com", wavedashUser: { id: anonId, username: anonName }, gameCloudId, ugcHost: "ugc.wavedashcdn.com", uploadsHost: "uploads.wavedash.com", launchParams: {}, parentOrigin: ORIGIN, initialVolume: 1 });
+const embed = await get(`https://${host}/embed?entrypoint=${encodeURIComponent(entrypoint)}&engine=${encodeURIComponent(engine)}&pk=${playKey}&sdkconfig=${encodeURIComponent(sdk)}&gameSlug=${GAME_SLUG}`);
 const jwt = embed.status === 200 ? /gameplayJwt":"([^"]+)"/.exec(embed.buf.toString("utf8"))?.[1] : null;
 if (!jwt) {
   console.error(`live embed -> HTTP ${embed.status}, no gameplayJwt`);
@@ -149,8 +184,8 @@ if (!jwt) {
 console.log(`build ${fnv32(gameBuildId)} @ ${host}`);
 
 // ── fetch ───────────────────────────────────────────────────────────────
-const list = candidates();
-console.log(`candidates: ${list.length}${DRY ? " (dry run — no writes)" : ""}`);
+const list = ONLY ? ONLY : candidates();
+console.log(`candidates: ${list.length}${ONLY ? " (--only: targeted re-capture)" : ""}${DRY ? " (dry run — no writes)" : ""}`);
 const results = [];
 let i = 0;
 let done = 0;

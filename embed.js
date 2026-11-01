@@ -1,7 +1,7 @@
 !(function() {
   try {
     var e = "undefined" != typeof window ? window : "undefined" != typeof global ? global : "undefined" != typeof globalThis ? globalThis : "undefined" != typeof self ? self : {};
-    e.SENTRY_RELEASE = { id: "c42f2b6ac45f69119209d4d0f1daacfda4b6815d" };
+    e.SENTRY_RELEASE = { id: "3d25e255591a5efbd65626c82cba2a70c68d2795" };
   } catch (e2) {
   }
 })();
@@ -10,7 +10,7 @@
   try {
     (function() {
       var e = "undefined" != typeof window ? window : "undefined" != typeof global ? global : "undefined" != typeof globalThis ? globalThis : "undefined" != typeof self ? self : {}, n = new e.Error().stack;
-      n && (e._sentryDebugIds = e._sentryDebugIds || {}, e._sentryDebugIds[n] = "acde0ed8-2107-4e8a-a91a-9b06f12fbb42", e._sentryDebugIdIdentifier = "sentry-dbid-acde0ed8-2107-4e8a-a91a-9b06f12fbb42");
+      n && (e._sentryDebugIds = e._sentryDebugIds || {}, e._sentryDebugIds[n] = "0737fa0e-0fb3-479a-99f2-e122f74d7572", e._sentryDebugIdIdentifier = "sentry-dbid-0737fa0e-0fb3-479a-99f2-e122f74d7572");
     })();
   } catch (e) {
   }
@@ -6159,6 +6159,45 @@ Event: ${getEventDescription(event)}`
     RENPY: "RENPY",
     CUSTOM: "CUSTOM"
   };
+  const LANGUAGE_CODE = {
+    ARABIC: "ar",
+    BULGARIAN: "bg",
+    CATALAN: "ca",
+    CHINESE_SIMPLIFIED: "zh-CN",
+    CHINESE_TRADITIONAL: "zh-TW",
+    CROATIAN: "hr",
+    CZECH: "cs",
+    DANISH: "da",
+    DUTCH: "nl",
+    ENGLISH: "en",
+    ESPERANTO: "eo",
+    FINNISH: "fi",
+    FRENCH: "fr",
+    GALICIAN: "gl",
+    GERMAN: "de",
+    GREEK: "el",
+    HUNGARIAN: "hu",
+    INDONESIAN: "id",
+    ITALIAN: "it",
+    JAPANESE: "ja",
+    KOREAN: "ko",
+    LATVIAN: "lv",
+    LITHUANIAN: "lt",
+    MALAY: "ms",
+    NORWEGIAN: "no",
+    POLISH: "pl",
+    PORTUGUESE: "pt",
+    PORTUGUESE_BRAZIL: "pt-BR",
+    ROMANIAN: "ro",
+    RUSSIAN: "ru",
+    SPANISH: "es",
+    SPANISH_LATIN_AMERICA: "es-419",
+    SWEDISH: "sv",
+    THAI: "th",
+    TURKISH: "tr",
+    UKRAINIAN: "uk",
+    VIETNAMESE: "vi"
+  };
   const LOBBY_VISIBILITY = {
     PUBLIC: 0,
     FRIENDS_ONLY: 1,
@@ -6213,6 +6252,7 @@ Event: ${getEventDescription(event)}`
     LOBBY_LEFT: "LobbyLeft",
     GET_LOBBY_INVITE_LINK: "GetLobbyInviteLink",
     GET_DEVICE_FINGERPRINT: "GetDeviceFingerprint",
+    GET_GAMEPLAY_ATTRIBUTION: "GetGameplayAttribution",
     SET_FULLSCREEN: "SetFullscreen",
     TOGGLE_FULLSCREEN: "ToggleFullscreen",
     FULLSCREEN_CHANGED: "FullscreenChanged",
@@ -6224,7 +6264,11 @@ Event: ${getEventDescription(event)}`
     GAMEPLAY_JWT_READY: "GameplayJwtReady",
     END_SESSION: "EndSession",
     TRIGGER_PAYWALL: "TriggerPaywall",
-    LINK_COPIED: "LinkCopied"
+    LINK_COPIED: "LinkCopied",
+    RECORDING_CHANGED: "RecordingChanged",
+    RECORDING_COMPLETE: "RecordingComplete",
+    RECORDING_HOTKEY_CHANGED: "RecordingHotkeyChanged",
+    RECORDING_HOTKEY_PRESSED: "RecordingHotkeyPressed"
   };
   const GAME_ISOLATION_ERROR_PATTERN = /SharedArrayBuffer|shared memory|isolat|threading|DataCloneError|be cloned/i;
   const SERVICE_WORKER_MESSAGE_TYPE = {
@@ -6457,6 +6501,25 @@ Event: ${getEventDescription(event)}`
   const ZERO = BigInt("0");
   const EIGHT = BigInt("8");
   const TWOFIFTYSIX = BigInt("256");
+  const COMMIT_TS_UNRESOLVED = "This commit timestamp is unresolved: its value is assigned when the mutation commits. Read the document after the mutation completes to get its value.";
+  class CommitTsPlaceholder {
+    [Symbol.toPrimitive](hint) {
+      if (hint === "string") {
+        return this.toString();
+      }
+      throw new Error(COMMIT_TS_UNRESOLVED);
+    }
+    valueOf() {
+      throw new Error(COMMIT_TS_UNRESOLVED);
+    }
+    toJSON() {
+      throw new Error(COMMIT_TS_UNRESOLVED);
+    }
+    toString() {
+      return "[unresolved commit timestamp]";
+    }
+  }
+  const commitTsPlaceholder = new CommitTsPlaceholder();
   function isSpecial(n) {
     return Number.isNaN(n) || !Number.isFinite(n) || Object.is(n, -0);
   }
@@ -6584,6 +6647,12 @@ Event: ${getEventDescription(event)}`
         }
         return float;
       }
+      if (key === "$commitTs") {
+        if (value.$commitTs !== null) {
+          throw new Error(`Malformed $commitTs field on ${value}`);
+        }
+        return commitTsPlaceholder;
+      }
       if (key === "$set") {
         throw new Error(
           `Received a Set which is no longer supported as a Convex type.`
@@ -6607,6 +6676,12 @@ Event: ${getEventDescription(event)}`
     const str = JSON.stringify(value, (_key, value2) => {
       if (value2 === void 0) {
         return "undefined";
+      }
+      if (typeof value2 === "function") {
+        return "[Function]";
+      }
+      if (typeof value2 === "symbol") {
+        return String(value2);
       }
       if (typeof value2 === "bigint") {
         return `${value2.toString()}n`;
@@ -6661,6 +6736,9 @@ Event: ${getEventDescription(event)}`
     }
     if (value instanceof ArrayBuffer) {
       return { $bytes: fromByteArray(new Uint8Array(value)) };
+    }
+    if (value instanceof CommitTsPlaceholder) {
+      return { $commitTs: null };
     }
     if (Array.isArray(value)) {
       return value.map(
@@ -6725,7 +6803,7 @@ Event: ${getEventDescription(event)}`
       this.data = data;
     }
   }
-  const version = "1.39.1";
+  const version = "1.48.0";
   const functionName = /* @__PURE__ */ Symbol.for("functionName");
   const toReferencePath = /* @__PURE__ */ Symbol.for("toReferencePath");
   function extractReferencePath(reference) {
@@ -6913,9 +6991,9 @@ Event: ${getEventDescription(event)}`
     }
   }
   function logFatalError(logger2, message) {
-    const errorMessage = `[CONVEX FATAL ERROR] ${message}`;
-    logger2.error(errorMessage);
-    return new Error(errorMessage);
+    const errorMessage2 = `[CONVEX FATAL ERROR] ${message}`;
+    logger2.error(errorMessage2);
+    return new Error(errorMessage2);
   }
   function createHybridErrorStacktrace(source2, udfPath, result) {
     const prefix = prefix_for_source(source2);
@@ -7307,12 +7385,12 @@ Event: ${getEventDescription(event)}`
         };
         onResolve = () => status.onResult(result);
       } else {
-        const errorMessage = response.result;
+        const errorMessage2 = response.result;
         const { errorData } = response;
-        logForFunction(this.logger, "error", udfType, udfPath, errorMessage);
+        logForFunction(this.logger, "error", udfType, udfPath, errorMessage2);
         result = {
           success: false,
-          errorMessage,
+          errorMessage: errorMessage2,
           errorData: errorData !== void 0 ? jsonToConvex(errorData) : void 0,
           logLines: response.logLines
         };
@@ -8541,6 +8619,8 @@ Event: ${getEventDescription(event)}`
       __publicField$3(this, "clearAuth");
       __publicField$3(this, "logger");
       __publicField$3(this, "refreshTokenLeewaySeconds");
+      __publicField$3(this, "initialAuthTokenReuse");
+      __publicField$3(this, "lastRefreshChange");
       __publicField$3(this, "tokenConfirmationAttempts", 0);
       this.syncState = syncState;
       this.authenticate = callbacks.authenticate;
@@ -8551,8 +8631,16 @@ Event: ${getEventDescription(event)}`
       this.clearAuth = callbacks.clearAuth;
       this.logger = config.logger;
       this.refreshTokenLeewaySeconds = config.refreshTokenLeewaySeconds;
+      this.initialAuthTokenReuse = config.initialAuthTokenReuse;
+      this.lastRefreshChange = false;
     }
-    async setConfig(fetchToken, onChange) {
+    notifyRefreshChange(isRefreshing) {
+      if (this.authState.state !== "noAuth" && this.authState.state !== "initialRefetch" && this.authState.config.onRefreshChange && this.lastRefreshChange !== isRefreshing) {
+        this.lastRefreshChange = isRefreshing;
+        this.authState.config.onRefreshChange(isRefreshing);
+      }
+    }
+    async setConfig(fetchToken, onChange, onRefreshChange) {
       this.resetAuthState();
       this._logVerbose("pausing WS for auth token fetch");
       this.pauseSocket();
@@ -8562,17 +8650,22 @@ Event: ${getEventDescription(event)}`
       if (token.isFromOutdatedConfig) {
         return;
       }
+      const config = {
+        fetchToken,
+        onAuthChange: onChange,
+        onRefreshChange
+      };
       if (token.value) {
         this.setAuthState({
           state: "waitingForServerConfirmationOfCachedToken",
-          config: { fetchToken, onAuthChange: onChange },
+          config,
           hasRetried: false
         });
         this.authenticate(token.value);
       } else {
         this.setAuthState({
           state: "initialRefetch",
-          config: { fetchToken, onAuthChange: onChange }
+          config
         });
         await this.refetchToken();
       }
@@ -8594,12 +8687,18 @@ Event: ${getEventDescription(event)}`
       this.syncState.markAuthCompletion();
       if (this.authState.state === "waitingForServerConfirmationOfCachedToken") {
         this._logVerbose("server confirmed auth token is valid");
-        void this.refetchToken();
+        const cachedToken = this.syncState.getAuth()?.value;
+        if (this.initialAuthTokenReuse && cachedToken) {
+          this.scheduleTokenRefetch(cachedToken, serverMessage.clientClockSkew);
+        } else {
+          void this.refetchToken();
+        }
         this.authState.config.onAuthChange(true);
         return;
       }
       if (this.authState.state === "waitingForServerConfirmationOfFreshToken") {
         this._logVerbose("server confirmed new auth token is valid");
+        this.notifyRefreshChange(false);
         this.scheduleTokenRefetch(this.authState.token);
         this.tokenConfirmationAttempts = 0;
         if (!this.authState.hadAuth) {
@@ -8649,7 +8748,11 @@ Event: ${getEventDescription(event)}`
           `retrying reauthentication, ${MAX_TOKEN_CONFIRMATION_ATTEMPTS - this.tokenConfirmationAttempts} attempts remaining`
         );
       }
+      this.notifyRefreshChange(true);
       await this.stopSocket();
+      if (this.authState.state === "noAuth") {
+        return;
+      }
       const token = await this.fetchTokenAndGuardAgainstRace(
         this.authState.config.fetchToken,
         {
@@ -8720,7 +8823,7 @@ Event: ${getEventDescription(event)}`
       );
       this.tryRestartSocket();
     }
-    scheduleTokenRefetch(token) {
+    scheduleTokenRefetch(token, clientClockSkewMs) {
       if (this.authState.state === "noAuth") {
         return;
       }
@@ -8738,12 +8841,22 @@ Event: ${getEventDescription(event)}`
         );
         return;
       }
-      const tokenValiditySeconds = exp - iat;
-      if (tokenValiditySeconds <= 2) {
+      const fullLifetimeSeconds = exp - iat;
+      if (fullLifetimeSeconds <= 2) {
         this.logger.error(
           "Auth token does not live long enough, cannot refetch the token"
         );
         return;
+      }
+      let tokenValiditySeconds;
+      if (clientClockSkewMs !== void 0) {
+        const estimatedServerNowSeconds = (Date.now() - clientClockSkewMs) / 1e3;
+        tokenValiditySeconds = exp - estimatedServerNowSeconds;
+        if (tokenValiditySeconds <= 0) {
+          tokenValiditySeconds = 0;
+        }
+      } else {
+        tokenValiditySeconds = fullLifetimeSeconds;
       }
       let delay = Math.min(
         MAXIMUM_REFRESH_DELAY,
@@ -8793,7 +8906,11 @@ Event: ${getEventDescription(event)}`
       onAuthChange(false);
       this.resetAuthState();
     }
+    // The sole path to `state === "noAuth"`; consumers rely on this firing
+    // `notifyRefreshChange(false)` to pair any in-flight `(true)`. May run
+    // when refresh state is already false.
     resetAuthState() {
+      this.notifyRefreshChange(false);
       this.setAuthState({ state: "noAuth" });
     }
     setAuthState(newAuth) {
@@ -8973,7 +9090,8 @@ Event: ${getEventDescription(event)}`
         },
         {
           logger: this.logger,
-          refreshTokenLeewaySeconds: authRefreshTokenLeewaySeconds
+          refreshTokenLeewaySeconds: authRefreshTokenLeewaySeconds,
+          initialAuthTokenReuse: options.initialAuthTokenReuse ?? false
         }
       );
       this.optimisticQueryResults = new OptimisticQueryResults();
@@ -9206,9 +9324,14 @@ Event: ${getEventDescription(event)}`
      * when the user's rights were permanently revoked.
      * @param fetchToken - an async function returning the JWT-encoded OpenID Connect Identity Token
      * @param onChange - a callback that will be called when the authentication status changes
+     * @param onRefreshChange - a callback called with `true` when the socket is paused to fetch a replacement token after a server rejection, and `false` when refresh completes
      */
-    setAuth(fetchToken, onChange) {
-      void this.authenticationManager.setConfig(fetchToken, onChange);
+    setAuth(fetchToken, onChange, onRefreshChange) {
+      void this.authenticationManager.setConfig(
+        fetchToken,
+        onChange,
+        onRefreshChange
+      );
     }
     hasAuth() {
       return this.state.hasAuth();
@@ -9792,8 +9915,11 @@ Event: ${getEventDescription(event)}`
           if (ongoingSplits.has(pageKey)) {
             continue;
           }
-          const pageToken = pageKeyToQuery.get(pageKey).queryToken;
-          const pageResult = getResult(pageToken);
+          const pageEntry = pageKeyToQuery.get(pageKey);
+          if (!pageEntry) {
+            throw new Error(`No page query for active pageKey ${pageKey}`);
+          }
+          const pageResult = getResult(pageEntry.queryToken);
           if (!pageResult) {
             continue;
           }
@@ -9804,6 +9930,7 @@ Event: ${getEventDescription(event)}`
             this.splitPaginatedQueryPage(
               paginatedQuery,
               pageKey,
+              pageEntry.cursor,
               result.splitCursor,
               // we just checked
               result.continueCursor
@@ -9812,11 +9939,10 @@ Event: ${getEventDescription(event)}`
         }
       }
     }
-    splitPaginatedQueryPage(paginatedQuery, pageKey, splitCursor, continueCursor) {
+    splitPaginatedQueryPage(paginatedQuery, pageKey, startCursor, splitCursor, continueCursor) {
       const splitKey1 = paginatedQuery.nextPageKey++;
       const splitKey2 = paginatedQuery.nextPageKey++;
       const paginationOpts = {
-        cursor: continueCursor,
         numItems: paginatedQuery.options.initialNumItems,
         id: paginatedQuery.id
       };
@@ -9826,13 +9952,15 @@ Event: ${getEventDescription(event)}`
           ...paginatedQuery.args,
           paginationOpts: {
             ...paginationOpts,
-            cursor: null,
-            // Start from beginning for first split
+            cursor: startCursor,
             endCursor: splitCursor
           }
         }
       );
-      paginatedQuery.pageKeyToQuery.set(splitKey1, firstSubscription);
+      paginatedQuery.pageKeyToQuery.set(splitKey1, {
+        ...firstSubscription,
+        cursor: startCursor
+      });
       const secondSubscription = this.client.subscribe(
         paginatedQuery.canonicalizedUdfPath,
         {
@@ -9844,7 +9972,10 @@ Event: ${getEventDescription(event)}`
           }
         }
       );
-      paginatedQuery.pageKeyToQuery.set(splitKey2, secondSubscription);
+      paginatedQuery.pageKeyToQuery.set(splitKey2, {
+        ...secondSubscription,
+        cursor: splitCursor
+      });
       paginatedQuery.ongoingSplits.set(pageKey, [splitKey1, splitKey2]);
     }
     /**
@@ -9867,7 +9998,10 @@ Event: ${getEventDescription(event)}`
         pageArgs
       );
       paginatedQuery.pageKeys.push(pageKey);
-      paginatedQuery.pageKeyToQuery.set(pageKey, subscription);
+      paginatedQuery.pageKeyToQuery.set(pageKey, {
+        ...subscription,
+        cursor: continueCursor
+      });
       return subscription;
     }
     removePaginatedQuerySubscriber(token) {
@@ -10409,7 +10543,7 @@ Event: ${getEventDescription(event)}`
       debounced.flush = flush;
       return debounced;
     }
-    function throttle(func, wait, options) {
+    function throttle2(func, wait, options) {
       var leading = true, trailing = true;
       if (typeof func != "function") {
         throw new TypeError(FUNC_ERROR_TEXT);
@@ -10452,11 +10586,11 @@ Event: ${getEventDescription(event)}`
       var isBinary = reIsBinary.test(value);
       return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
     }
-    lodash_throttle = throttle;
+    lodash_throttle = throttle2;
     return lodash_throttle;
   }
   var lodash_throttleExports = requireLodash_throttle();
-  const throttle2 = /* @__PURE__ */ getDefaultExportFromCjs(lodash_throttleExports);
+  const throttle = /* @__PURE__ */ getDefaultExportFromCjs(lodash_throttleExports);
   var LobbyKickedReason = {
     KICKED: "KICKED",
     ERROR: "ERROR"
@@ -10537,10 +10671,10 @@ Event: ${getEventDescription(event)}`
   var AudioManager = class extends WavedashManager {
     constructor(sdk, initialVolume = 1) {
       super(sdk);
-      this.frames = /* @__PURE__ */ new Set();
-      this.iframeBindings = /* @__PURE__ */ new WeakMap();
-      this.iframeLoadHandlers = /* @__PURE__ */ new Map();
-      this.boundIframes = /* @__PURE__ */ new Set();
+      this.frames = /* @__PURE__ */ new Map();
+      this.captureTap = null;
+      this.NativeAudioContext = null;
+      this.ignoredMedia = /* @__PURE__ */ new WeakSet();
       this.handleVolume = (data) => {
         if (!Number.isFinite(data.volume) || data.volume < 0 || data.volume > 1)
           return;
@@ -10556,8 +10690,19 @@ Event: ${getEventDescription(event)}`
       }
       this._volume = initialVolume;
       if (typeof window !== "undefined") {
-        this.attachWindow(window);
+        this.NativeAudioContext = window.AudioContext ?? null;
       }
+      this.unsubscribeFrames = this.sdk.sameOriginFrames.subscribe({
+        attach: (win) => {
+          const shim = new AudioFrameShim(this, win);
+          this.frames.set(win, shim);
+          shim.applyMute(this.isMuted());
+        },
+        detach: (win) => {
+          this.frames.get(win).uninstall();
+          this.frames.delete(win);
+        }
+      });
       this.sdk.iframeMessenger.addEventListener(
         IFRAME_MESSAGE_TYPE.VOLUME_CHANGED,
         this.handleVolume
@@ -10569,89 +10714,66 @@ Event: ${getEventDescription(event)}`
     getVolume() {
       return this._volume;
     }
-    /** Shim a window we can reach. Same-origin only (cross-origin access throws). */
-    attachWindow(win) {
+    /**
+     * Build a MediaStream audio tap of everything the game plays, for gameplay
+     * capture (see ScreenCaptureManager). Returns the tap's audio tracks plus a
+     * `dispose()` that tears down the capture-only graph edges. One tap at a
+     * time; creating a new one disposes the previous.
+     *
+     * Everything already funnels through the per-context master GainNodes each
+     * frame's shim owns, so capture is just: master gain → mixer. The mixer is
+     * a dedicated, unshimmed context; every game context (across frames too)
+     * is bridged into it via MediaStream nodes, since Web Audio nodes can't
+     * connect across contexts directly. Because the recording rides the master
+     * gains, captured audio respects the user's volume/mute — matching what
+     * they actually hear.
+     *
+     * The tap stays open for the whole recording: contexts the game creates
+     * and media it starts mid-recording join it as they appear.
+     */
+    createCaptureTap() {
+      this.captureTap?.dispose();
+      this.captureTap = null;
+      if (!this.NativeAudioContext) return null;
+      let tap;
       try {
-        void win.document;
+        tap = new CaptureTap(this.NativeAudioContext);
       } catch {
-        return;
+        return null;
       }
-      const shim = new AudioFrameShim(this, win);
-      this.frames.add(shim);
-    }
-    /**
-     * Start tracking an iframe: attach now (already-loaded frames) and on every
-     * `load` (about:blank → game, and later src swaps). Idempotent.
-     */
-    bindIframe(iframe) {
-      if (!this.boundIframes.has(iframe)) {
-        this.boundIframes.add(iframe);
-        const onLoad = () => this.attachIframe(iframe);
-        this.iframeLoadHandlers.set(iframe, onLoad);
-        iframe.addEventListener("load", onLoad);
-      }
-      this.attachIframe(iframe);
-    }
-    /** Stop tracking an iframe and tear down its frame (iframe removed from DOM). */
-    unbindIframe(iframe) {
-      const handler = this.iframeLoadHandlers.get(iframe);
-      if (handler) {
-        iframe.removeEventListener("load", handler);
-        this.iframeLoadHandlers.delete(iframe);
-      }
-      this.boundIframes.delete(iframe);
-      this.teardownFrame(iframe);
-    }
-    /**
-     * Install (or re-install) a shim for an iframe's current document. No-ops
-     * while not yet navigated or already shimmed; replaces the previous shim when
-     * the iframe navigates to a fresh document, and drops it when it goes
-     * cross-origin (we can no longer reach it).
-     */
-    attachIframe(iframe) {
-      let win = null;
-      let doc = null;
-      try {
-        const cw = iframe.contentWindow;
-        if (cw) {
-          doc = cw.document;
-          win = cw;
+      this.captureTap = tap;
+      this.frames.forEach((shim) => {
+        for (const { ctx, gain } of shim.liveContexts()) tap.add(ctx, gain);
+        shim.routeElementsForCapture();
+      });
+      return {
+        tracks: tap.tracks,
+        dispose: () => {
+          tap.dispose();
+          if (this.captureTap === tap) this.captureTap = null;
         }
-      } catch {
-      }
-      if (!win || !doc) {
-        this.teardownFrame(iframe);
-        return;
-      }
-      const existing = this.iframeBindings.get(iframe);
-      if (existing) {
-        if (existing.doc === doc) return;
-        this.teardownFrame(iframe);
-      }
-      const shim = new AudioFrameShim(this, win);
-      this.frames.add(shim);
-      this.iframeBindings.set(iframe, { doc, shim });
-      shim.applyMute(this.isMuted());
+      };
     }
-    /** Remove and uninstall the shim bound to an iframe's (previous) document. */
-    teardownFrame(iframe) {
-      const binding = this.iframeBindings.get(iframe);
-      if (!binding) return;
-      this.frames.delete(binding.shim);
-      binding.shim.uninstall();
-      this.iframeBindings.delete(iframe);
+    isCapturing() {
+      return this.captureTap !== null;
+    }
+    /** Exempt an SDK-internal media element from all audio shimming. */
+    ignoreMediaElement(el) {
+      this.ignoredMedia.add(el);
+    }
+    isIgnoredMedia(el) {
+      return this.ignoredMedia.has(el);
+    }
+    /** Called by frame shims when a context appears while a tap is open. */
+    joinCapture(ctx, gain) {
+      this.captureTap?.add(ctx, gain);
     }
     destroy() {
       this.sdk.iframeMessenger.removeEventListener(
         IFRAME_MESSAGE_TYPE.VOLUME_CHANGED,
         this.handleVolume
       );
-      this.boundIframes.forEach((iframe) => {
-        const handler = this.iframeLoadHandlers.get(iframe);
-        if (handler) iframe.removeEventListener("load", handler);
-      });
-      this.boundIframes.clear();
-      this.iframeLoadHandlers.clear();
+      this.unsubscribeFrames();
       this.frames.forEach((shim) => shim.uninstall());
       this.frames.clear();
       super.destroy();
@@ -10666,8 +10788,8 @@ Event: ${getEventDescription(event)}`
       this.intendedVolume = /* @__PURE__ */ new WeakMap();
       this.webAudioElements = /* @__PURE__ */ new WeakSet();
       this.originalVolumeDescriptor = null;
+      this.captureContext = null;
       this.intendedUtteranceVolume = /* @__PURE__ */ new WeakMap();
-      this.boundChildren = /* @__PURE__ */ new Set();
       this.originalAudioContext = null;
       this.originalWebKitAudioContext = null;
       this.originalAudio = null;
@@ -10711,19 +10833,58 @@ Event: ${getEventDescription(event)}`
         });
       }
     }
-    /** Hand a discovered child iframe to the manager, remembering it for teardown. */
-    bindChild(iframe) {
-      this.boundChildren.add(iframe);
-      this.manager.bindIframe(iframe);
+    /** Live (context, master gain) pairs in this frame. */
+    liveContexts() {
+      const live = [];
+      this.contexts.forEach((ctx) => {
+        const gain = this.contextGains.get(ctx);
+        if (gain && ctx.state !== "closed") live.push({ ctx, gain });
+      });
+      return live;
     }
-    /** Stop tracking a child iframe that was removed from this document. */
-    unbindChild(iframe) {
-      this.boundChildren.delete(iframe);
-      this.manager.unbindIframe(iframe);
+    /** Reroute every tracked media element that can be captured (see routeForCapture). */
+    routeElementsForCapture() {
+      const elements = [];
+      this.elements.forEach((el) => elements.push(el));
+      for (const el of elements) this.routeForCapture(el);
+    }
+    /**
+     * Reroute a media element into this frame's Web Audio graph (creating a
+     * context if the frame has none) so the open capture tap hears it.
+     *
+     * The reroute (createMediaElementSource) is permanent for the life of the
+     * element — the Web Audio spec offers no undo — but it's transparent:
+     * output still flows master gain → real destination, and the shimmed
+     * createMediaElementSource marks it in `webAudioElements` so volume moves to
+     * the master gain instead of being applied twice. Media we can't prove is
+     * CORS-clean is left alone (see canRouteThroughWebAudio).
+     */
+    routeForCapture(el) {
+      if (this.webAudioElements.has(el) || this.manager.isIgnoredMedia(el) || !canRouteThroughWebAudio(el, this.win))
+        return;
+      const live = this.liveContexts();
+      let target = live[live.length - 1];
+      if (!target) {
+        if (!this.captureContext || this.captureContext.state === "closed") {
+          if (!this.win.AudioContext) return;
+          try {
+            this.captureContext = new this.win.AudioContext();
+          } catch {
+            return;
+          }
+        }
+        const gain = this.contextGains.get(this.captureContext);
+        if (!gain) return;
+        target = { ctx: this.captureContext, gain };
+      }
+      try {
+        target.ctx.createMediaElementSource(el).connect(target.gain);
+      } catch {
+      }
     }
     /** Track a media element and silence it if currently muted. Idempotent. */
     trackElement(el) {
-      if (this.intendedVolume.has(el)) return;
+      if (this.intendedVolume.has(el) || this.manager.isIgnoredMedia(el)) return;
       const volume = this.originalVolumeDescriptor?.get?.call(el) ?? el.volume;
       this.intendedVolume.set(el, volume);
       this.originalVolumeDescriptor?.set?.call(
@@ -10791,41 +10952,20 @@ Event: ${getEventDescription(event)}`
       }
       if (doc) {
         const HTMLMediaElementCtor = win.HTMLMediaElement;
-        const HTMLIFrameElementCtor = win.HTMLIFrameElement;
         const HTMLElementCtor = win.HTMLElement;
         doc.querySelectorAll("audio, video").forEach((el) => {
           this.trackElement(el);
-        });
-        doc.querySelectorAll("iframe").forEach((el) => {
-          this.bindChild(el);
         });
         this.mutationObserver = new win.MutationObserver((mutations) => {
           for (const m of mutations) {
             m.addedNodes.forEach((node) => {
               if (node instanceof HTMLMediaElementCtor) {
                 this.trackElement(node);
-              } else if (node instanceof HTMLIFrameElementCtor) {
-                this.bindChild(node);
               } else if (node instanceof HTMLElementCtor) {
                 const el = node;
                 if (!el.firstElementChild) return;
-                el.querySelectorAll("audio, video, iframe").forEach((child2) => {
-                  if (child2 instanceof HTMLIFrameElementCtor) {
-                    this.bindChild(child2);
-                  } else {
-                    this.trackElement(child2);
-                  }
-                });
-              }
-            });
-            m.removedNodes.forEach((node) => {
-              if (node instanceof HTMLIFrameElementCtor) {
-                this.unbindChild(node);
-              } else if (node instanceof HTMLElementCtor) {
-                const el = node;
-                if (!el.firstElementChild) return;
-                el.querySelectorAll("iframe").forEach((f) => {
-                  this.unbindChild(f);
+                el.querySelectorAll("audio, video").forEach((child2) => {
+                  this.trackElement(child2);
                 });
               }
             });
@@ -10862,6 +11002,7 @@ Event: ${getEventDescription(event)}`
       ((shim) => {
         win.HTMLMediaElement.prototype.play = function() {
           shim.trackElement(this);
+          if (shim.manager.isCapturing()) shim.routeForCapture(this);
           return originalPlay.call(this);
         };
       })(this);
@@ -10967,6 +11108,7 @@ Event: ${getEventDescription(event)}`
           });
           shim.contexts.add(this);
           shim.contextGains.set(this, masterGain);
+          shim.manager.joinCapture(this, masterGain);
         }
         close() {
           shim.contextGains.delete(this);
@@ -10987,8 +11129,6 @@ Event: ${getEventDescription(event)}`
         }
       } catch {
       }
-      this.boundChildren.forEach((child2) => this.manager.unbindIframe(child2));
-      this.boundChildren.clear();
       let sameRealm = false;
       try {
         sameRealm = win.document === this.doc;
@@ -11078,7 +11218,63 @@ Event: ${getEventDescription(event)}`
       this.intendedMuted = /* @__PURE__ */ new WeakMap();
       this.intendedVolume = /* @__PURE__ */ new WeakMap();
       this.webAudioElements = /* @__PURE__ */ new WeakSet();
+      this.captureContext = null;
       this.intendedUtteranceVolume = /* @__PURE__ */ new WeakMap();
+    }
+  };
+  function canRouteThroughWebAudio(el, win) {
+    if (el.srcObject) return true;
+    if (el.crossOrigin !== null) return true;
+    const src = el.currentSrc || el.src;
+    if (!src) return false;
+    try {
+      const url = new URL(src, win.location.href);
+      return url.protocol === "blob:" || url.protocol === "data:" || url.origin === win.location.origin;
+    } catch {
+      return false;
+    }
+  }
+  var CaptureTap = class {
+    constructor(NativeAudioContext) {
+      this.bridges = /* @__PURE__ */ new Map();
+      this.mixer = new NativeAudioContext();
+      if (this.mixer.state === "suspended") this.mixer.resume().catch(() => {
+      });
+      this.dest = this.mixer.createMediaStreamDestination();
+      const silence = this.mixer.createConstantSource();
+      silence.offset.value = 0;
+      silence.connect(this.dest);
+      silence.start();
+    }
+    get tracks() {
+      return this.dest.stream.getAudioTracks();
+    }
+    add(ctx, gain) {
+      if (this.bridges.has(gain) || ctx.state === "closed") return;
+      if (ctx.state === "suspended") ctx.resume().catch(() => {
+      });
+      try {
+        const bridgeDest = ctx.createMediaStreamDestination();
+        gain.connect(bridgeDest);
+        const bridgeSrc = this.mixer.createMediaStreamSource(bridgeDest.stream);
+        bridgeSrc.connect(this.dest);
+        this.bridges.set(gain, () => {
+          gain.disconnect(bridgeDest);
+          bridgeSrc.disconnect(this.dest);
+        });
+      } catch {
+      }
+    }
+    dispose() {
+      for (const cleanup of this.bridges.values()) {
+        try {
+          cleanup();
+        } catch {
+        }
+      }
+      this.bridges.clear();
+      this.mixer.close().catch(() => {
+      });
     }
   };
   var WeakRefSet = class {
@@ -11169,6 +11365,7 @@ Event: ${getEventDescription(event)}`
       this.jwtPromise = null;
       this.retryTimeout = null;
       this.retryAttempt = 0;
+      this.sessionExpired = false;
       this.destroyed = false;
       this.firstAuthenticatedAt = new Promise((resolve) => {
         this.resolveFirstAuthenticatedAt = resolve;
@@ -11185,6 +11382,9 @@ Event: ${getEventDescription(event)}`
     getToken(forceRefresh = false) {
       if (!forceRefresh && this.jwt) return Promise.resolve(this.jwt);
       if (!forceRefresh && this.jwtPromise) return this.jwtPromise;
+      if (this.sessionExpired) {
+        return Promise.reject(new Error("Gameplay session expired"));
+      }
       const previous = this.jwtPromise;
       const fetchToken = async () => {
         if (previous) await previous.catch(() => {
@@ -11197,6 +11397,7 @@ Event: ${getEventDescription(event)}`
           }
         );
         if (!response.ok) {
+          if (response.status === 401) this.sessionExpired = true;
           throw new Error(`Failed to refresh gameplay token: ${response.status}`);
         }
         return response.text();
@@ -11210,6 +11411,10 @@ Event: ${getEventDescription(event)}`
           this.resolveFirstAuthenticatedAt = null;
         }
         this.retryAttempt = 0;
+        if (this.sessionExpired) {
+          this.sessionExpired = false;
+          if (!this.destroyed) this.setupConvexAuth();
+        }
         if (this.jwtPromise === promise) {
           this.sdk.iframeMessenger.postToParent(
             IFRAME_MESSAGE_TYPE.GAMEPLAY_JWT_READY,
@@ -11241,7 +11446,7 @@ Event: ${getEventDescription(event)}`
     }
     /** Exponential backoff; the counter resets only on a successful fetch */
     scheduleRetry() {
-      if (this.destroyed || this.retryTimeout) return;
+      if (this.destroyed || this.sessionExpired || this.retryTimeout) return;
       const delayMs = Math.min(
         RETRY_MAX_MS,
         RETRY_BASE_MS * 2 ** Math.min(this.retryAttempt, 10)
@@ -11313,7 +11518,9 @@ Event: ${getEventDescription(event)}`
         await navigator.clipboard.writeText(attributed);
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        logger.warn(`copyLink("${attributed}") failed to write the clipboard: ${message}`);
+        logger.warn(
+          `copyLink("${attributed}") failed to write the clipboard: ${message}`
+        );
         return false;
       }
       this.sdk.iframeMessenger.postToParent(IFRAME_MESSAGE_TYPE.LINK_COPIED, {
@@ -11328,7 +11535,8 @@ Event: ${getEventDescription(event)}`
       this.patchedOpen = (url, target, features) => {
         const resolved = this.resolveHttpUrl(url);
         const navigatesInPlace = typeof target === "string" && ["_self", "_parent", "_top"].includes(target.toLowerCase());
-        if (!resolved || navigatesInPlace) return nativeOpen(url, target, features);
+        if (!resolved || navigatesInPlace)
+          return nativeOpen(url, target, features);
         void this.copyLink(resolved);
         return null;
       };
@@ -11886,9 +12094,10 @@ Event: ${getEventDescription(event)}`
   _FileSystemManager.KEEPALIVE_MAX_BYTES = 60 * 1024;
   _FileSystemManager.UPLOAD_TIMEOUT_MS = 10 * 60 * 1e3;
   var FileSystemManager = _FileSystemManager;
-  function getAvatarUrl(r2KeyOrUrl, host, size = AvatarSize.MEDIUM) {
-    if (!r2KeyOrUrl) return void 0;
-    return getCdnImageUrl(r2KeyOrUrl, host, {
+  function getAvatarUrl(r2KeyOrUrl, hosts, size = AvatarSize.MEDIUM) {
+    if (!r2KeyOrUrl && !hosts.staticHost) return void 0;
+    const [r2Key, host] = r2KeyOrUrl ? [r2KeyOrUrl, hosts.uploadsHost] : ["images/default-avatar.png", hosts.staticHost];
+    return getCdnImageUrl(r2Key, host, {
       width: size,
       height: size,
       fit: "cover",
@@ -11916,14 +12125,14 @@ Event: ${getEventDescription(event)}`
      * @param userId - The user ID to get the avatar URL for
      * @param size - Pixel size for width and height. Use a value from
      *   `AvatarSize` (SMALL=64, MEDIUM=128, LARGE=256) or any custom pixel size.
-     * @returns CDN URL with size transformation, or null if user not cached or has no avatar
+     * @returns CDN URL with size transformation (Wavedash default avatar if none is set), or null if user not cached
      */
     getUserAvatarUrl(userId, size = AvatarSize.MEDIUM) {
       const user = this.userCache.get(userId) ?? this.leaderboardPageUserCache.get(userId);
-      if (!user?.avatarR2Key) {
+      if (!user) {
         return null;
       }
-      return getAvatarUrl(user.avatarR2Key, this.sdk.uploadsHost, size) ?? null;
+      return getAvatarUrl(user.avatarR2Key, this.sdk, size) ?? null;
     }
     /**
      * Returns the cached username for a given user ID
@@ -11950,7 +12159,7 @@ Event: ${getEventDescription(event)}`
       this.cacheUsers(friends);
       return friends.map((friend) => ({
         ...friend,
-        avatarUrl: getAvatarUrl(friend.avatarUrl, this.sdk.uploadsHost)
+        avatarUrl: getAvatarUrl(friend.avatarUrl, this.sdk)
       }));
     }
     /**
@@ -12219,10 +12428,50 @@ Event: ${getEventDescription(event)}`
       }
     };
   }
+  function createThrottledSender({
+    waitMs,
+    leading,
+    hasPending,
+    send
+  }) {
+    let inFlight = false;
+    let flushRequested = false;
+    const run = () => {
+      if (inFlight || !hasPending()) return;
+      inFlight = true;
+      void send().finally(() => {
+        inFlight = false;
+        const shouldFlushNow = flushRequested;
+        flushRequested = false;
+        if (!hasPending()) return;
+        throttled();
+        if (shouldFlushNow) throttled.flush();
+      });
+    };
+    const throttled = throttle(run, waitMs, { leading, trailing: true });
+    return {
+      schedule: () => {
+        throttled();
+      },
+      flush: () => {
+        if (inFlight) flushRequested = true;
+        throttled.flush();
+      },
+      cancel: () => {
+        throttled.cancel();
+      }
+    };
+  }
+  var PRESENCE_UPDATE_THROTTLE_MS = 2e3;
   var INPUT_LISTENER_OPTS = {
     passive: true,
     capture: true
   };
+  function isSamePresenceData(a, b) {
+    const aKeys = Object.keys(a);
+    if (aKeys.length !== Object.keys(b).length) return false;
+    return aKeys.every((key) => key in b && a[key] === b[key]);
+  }
   var HeartbeatManager = class extends WavedashManager {
     constructor(sdk) {
       super(sdk);
@@ -12244,6 +12493,15 @@ Event: ${getEventDescription(event)}`
       this.INPUT_THROTTLE_MS = 1e3;
       this.GAMEPAD_POLL_INTERVAL_MS = 1e3;
       this.cachedPresenceData = {};
+      this.lastSentPresenceData = null;
+      this.pendingPresenceData = null;
+      this.pendingPresenceWaiters = [];
+      this.presenceSender = createThrottledSender({
+        waitMs: PRESENCE_UPDATE_THROTTLE_MS,
+        leading: true,
+        hasPending: () => this.pendingPresenceData !== null,
+        send: () => this.sendPresence()
+      });
       this.handleVisibilityChange = () => {
         if (document.visibilityState === "visible") {
           this.start();
@@ -12320,6 +12578,7 @@ Event: ${getEventDescription(event)}`
     }
     /** Stop the heartbeat and clear the inactivity timer. Idempotent. */
     stop() {
+      this.lastSentPresenceData = null;
       if (this.inactivityTimeout !== null) {
         clearTimeout(this.inactivityTimeout);
         this.inactivityTimeout = null;
@@ -12339,17 +12598,14 @@ Event: ${getEventDescription(event)}`
      * @returns true if the presence was updated successfully
      */
     async updateUserPresence(data) {
-      try {
-        this.cachedPresenceData = data;
-        await this.sdk.convexClient.mutation(api.sdk.presence.heartbeat, {
-          data,
-          deviceFingerprint: this.deviceFingerprint
-        });
+      if (this.pendingPresenceData === null && this.lastSentPresenceData && isSamePresenceData(this.lastSentPresenceData, data)) {
         return true;
-      } catch (error2) {
-        logger.error(`Error updating presence: ${error2}`);
-        return false;
       }
+      this.pendingPresenceData = { ...data };
+      return new Promise((resolve) => {
+        this.pendingPresenceWaiters.push(resolve);
+        this.presenceSender.schedule();
+      });
     }
     isCurrentlyConnected() {
       return this.isConnected;
@@ -12357,6 +12613,9 @@ Event: ${getEventDescription(event)}`
     /** Full teardown — stops intervals and removes all listeners */
     destroy() {
       this.stop();
+      this.presenceSender.cancel();
+      this.pendingPresenceData = null;
+      for (const resolve of this.pendingPresenceWaiters.splice(0)) resolve(false);
       if (this.gamepadPollInterval !== null) {
         clearInterval(this.gamepadPollInterval);
         this.gamepadPollInterval = null;
@@ -12389,6 +12648,27 @@ Event: ${getEventDescription(event)}`
     // =================
     // Private functions
     // =================
+    sendPresence() {
+      const sentData = this.pendingPresenceData;
+      const waiters = this.pendingPresenceWaiters;
+      this.pendingPresenceData = null;
+      this.pendingPresenceWaiters = [];
+      this.lastSentPresenceData = null;
+      this.cachedPresenceData = sentData;
+      return this.sdk.convexClient.mutation(api.sdk.presence.heartbeat, {
+        data: sentData,
+        deviceFingerprint: this.deviceFingerprint,
+        pageViewId: this.sdk.pageViewId
+      }).then((accepted) => {
+        if (accepted) this.lastSentPresenceData = sentData;
+        return accepted;
+      }).catch((error2) => {
+        logger.error(`Error updating presence: ${error2}`);
+        return false;
+      }).then((accepted) => {
+        for (const resolve of waiters) resolve(accepted);
+      });
+    }
     tickHeartbeat() {
       const timeSinceLastHeartbeat = Date.now() - this.lastHeartbeatTime;
       const needsReestablish = this.isFirstTick || timeSinceLastHeartbeat >= HEARTBEAT.CLIENT_REESTABLISH_THRESHOLD_MS;
@@ -12405,13 +12685,17 @@ Event: ${getEventDescription(event)}`
       this.sdk.convexClient.mutation(api.sdk.presence.heartbeat, {
         ...reestablish ? {
           data: this.cachedPresenceData,
-          deviceFingerprint: this.deviceFingerprint
+          deviceFingerprint: this.deviceFingerprint,
+          pageViewId: this.sdk.pageViewId
         } : {}
       }).then((accepted) => {
         if (accepted) {
           this.lastHeartbeatTime = Date.now();
+        } else {
+          this.lastSentPresenceData = null;
         }
       }).catch((error2) => {
+        this.lastSentPresenceData = null;
         logger.error(`Heartbeat failed: ${error2}`);
       }).finally(() => {
         this.heartbeatInFlight = false;
@@ -12522,76 +12806,147 @@ Event: ${getEventDescription(event)}`
       }
     }
   };
-  var LeaderboardManager = class extends WavedashManager {
+  var PromiseCache = class {
+    constructor(ttlMs) {
+      this.ttlMs = ttlMs;
+      this.entries = /* @__PURE__ */ new Map();
+    }
+    get(key, load) {
+      const now = Date.now();
+      const existing = this.entries.get(key);
+      if (existing && now < existing.expiresAt) return existing.promise;
+      for (const [k, entry2] of this.entries) {
+        if (now >= entry2.expiresAt) this.entries.delete(k);
+      }
+      const entry = { promise: load(), expiresAt: Infinity };
+      this.entries.set(key, entry);
+      entry.promise.then(
+        () => {
+          if (this.entries.get(key) === entry) {
+            entry.expiresAt = Date.now() + this.ttlMs;
+          }
+        },
+        () => {
+          if (this.entries.get(key) === entry) this.entries.delete(key);
+        }
+      );
+      return entry.promise;
+    }
+    clear() {
+      this.entries.clear();
+    }
+  };
+  var _LeaderboardManager = class _LeaderboardManager2 extends WavedashManager {
     constructor(sdk) {
       super(sdk);
       this.leaderboardCache = /* @__PURE__ */ new Map();
+      this.totalEntriesUpdatedAt = /* @__PURE__ */ new Map();
+      this.leaderboardIdsByName = /* @__PURE__ */ new Map();
+      this.pendingGetLeaderboard = new PromiseCache(0);
+      this.pendingGetOrCreateLeaderboard = new PromiseCache(0);
+      this.entryReadCaches = /* @__PURE__ */ new Map();
     }
     async getLeaderboard(name) {
-      const leaderboard = await this.sdk.convexClient.query(
-        api.sdk.leaderboards.getLeaderboard,
-        { name }
-      );
-      this.leaderboardCache.set(leaderboard.id, leaderboard);
-      return leaderboard;
+      const cached = this.getCachedLeaderboardByName(name);
+      if (cached) return cached;
+      const leaderboard = await this.pendingGetLeaderboard.get(name, async () => {
+        const leaderboard2 = await this.findLeaderboard(name) ?? await this.sdk.convexClient.query(
+          api.sdk.leaderboards.getLeaderboard,
+          { name }
+        );
+        this.cacheLeaderboard(name, leaderboard2);
+        return leaderboard2;
+      });
+      return { ...leaderboard };
     }
     async getOrCreateLeaderboard(name, sortOrder, displayType) {
-      const leaderboard = await this.sdk.convexClient.mutation(
-        api.sdk.leaderboards.getOrCreateLeaderboard,
-        { name, sortOrder, displayType }
+      const cached = this.getCachedLeaderboardByName(name);
+      if (cached) {
+        const leaderboard2 = { ...cached, created: false };
+        return leaderboard2;
+      }
+      let isFirstCaller = false;
+      const leaderboard = await this.pendingGetOrCreateLeaderboard.get(
+        name,
+        async () => {
+          isFirstCaller = true;
+          const found = await this.findLeaderboard(name);
+          const leaderboard2 = found ? { ...found, created: false } : await this.sdk.convexClient.mutation(
+            api.sdk.leaderboards.getOrCreateLeaderboard,
+            { name, sortOrder, displayType }
+          );
+          this.cacheLeaderboard(name, leaderboard2);
+          return leaderboard2;
+        }
       );
-      this.leaderboardCache.set(leaderboard.id, leaderboard);
-      return leaderboard;
+      const result = {
+        ...leaderboard,
+        created: isFirstCaller && leaderboard.created
+      };
+      return result;
     }
     getLeaderboardEntryCount(leaderboardId) {
       const cachedLeaderboard = this.leaderboardCache.get(leaderboardId);
       return cachedLeaderboard ? cachedLeaderboard.totalEntries : -1;
     }
     async getMyLeaderboardEntries(leaderboardId) {
-      const result = await this.sdk.convexClient.query(
-        api.sdk.leaderboards.getMyLeaderboardEntry,
-        { leaderboardId }
+      const result = await this.readEntries(
+        leaderboardId,
+        ["getMyLeaderboardEntry"],
+        () => this.sdk.convexClient.query(
+          api.sdk.leaderboards.getMyLeaderboardEntry,
+          { leaderboardId }
+        )
       );
-      if (result && result.totalEntries) {
-        this.updateCachedTotalEntries(leaderboardId, result.totalEntries);
-      }
       const entry = result.entry ? {
         ...result.entry,
         userId: this.sdk.wavedashUser.id,
         username: this.sdk.wavedashUser.username,
-        userAvatarUrl: getAvatarUrl(
-          this.sdk.wavedashUser.avatarUrl,
-          this.sdk.uploadsHost
-        )
+        userAvatarUrl: getAvatarUrl(this.sdk.wavedashUser.avatarUrl, this.sdk)
       } : null;
       return entry ? [entry] : [];
     }
     async listLeaderboardEntriesAroundUser(leaderboardId, countAhead, countBehind, friendsOnly = false) {
-      const result = await this.sdk.convexClient.query(
-        api.sdk.leaderboards.listEntriesAroundUser,
-        { leaderboardId, countAhead, countBehind, friendsOnly }
+      const result = await this.readEntries(
+        leaderboardId,
+        ["listEntriesAroundUser", countAhead, countBehind, friendsOnly],
+        () => this.sdk.convexClient.query(
+          api.sdk.leaderboards.listEntriesAroundUser,
+          { leaderboardId, countAhead, countBehind, friendsOnly }
+        )
       );
-      if (result && result.totalEntries) {
-        this.updateCachedTotalEntries(leaderboardId, result.totalEntries);
-      }
       this.sdk.friendsManager.cacheLeaderboardPage(result.entries);
       return result.entries.map((entry) => ({
         ...entry,
-        userAvatarUrl: getAvatarUrl(entry.userAvatarUrl, this.sdk.uploadsHost)
+        userAvatarUrl: getAvatarUrl(entry.userAvatarUrl, this.sdk)
       }));
     }
     async listLeaderboardEntries(leaderboardId, offset, limit, friendsOnly = false) {
-      const result = await this.sdk.convexClient.query(
-        api.sdk.leaderboards.listEntries,
-        { leaderboardId, offset, limit, friendsOnly }
+      const result = await this.readEntries(
+        leaderboardId,
+        ["listEntries", offset, limit, friendsOnly],
+        () => friendsOnly ? this.sdk.convexClient.query(api.sdk.leaderboards.listEntries, {
+          leaderboardId,
+          offset,
+          limit,
+          friendsOnly
+        }) : (
+          // Reads nothing player-specific, so every player shares one cached result
+          this.sdk.convexClient.query(
+            api.sdk.leaderboards.listGlobalEntries,
+            {
+              gameCloudId: this.sdk.gameCloudId,
+              leaderboardId,
+              offset,
+              limit
+            }
+          )
+        )
       );
-      if (result && result.totalEntries) {
-        this.updateCachedTotalEntries(leaderboardId, result.totalEntries);
-      }
       this.sdk.friendsManager.cacheLeaderboardPage(result.entries);
       return result.entries.map((entry) => ({
         ...entry,
-        userAvatarUrl: getAvatarUrl(entry.userAvatarUrl, this.sdk.uploadsHost)
+        userAvatarUrl: getAvatarUrl(entry.userAvatarUrl, this.sdk)
       }));
     }
     async uploadLeaderboardScore(leaderboardId, score, keepBest, ugcId, metadata) {
@@ -12599,6 +12954,7 @@ Event: ${getEventDescription(event)}`
         api.sdk.leaderboards.upsertLeaderboardEntry,
         { leaderboardId, score, keepBest, ugcId, metadata }
       );
+      this.entryReadCaches.delete(leaderboardId);
       if (result && result.totalEntries) {
         this.updateCachedTotalEntries(leaderboardId, result.totalEntries);
       }
@@ -12611,15 +12967,58 @@ Event: ${getEventDescription(event)}`
         // User info
         userId: this.sdk.wavedashUser.id,
         username: this.sdk.wavedashUser.username,
-        userAvatarUrl: getAvatarUrl(
-          this.sdk.wavedashUser.avatarUrl,
-          this.sdk.uploadsHost
-        )
+        userAvatarUrl: getAvatarUrl(this.sdk.wavedashUser.avatarUrl, this.sdk)
       };
     }
     // ================
     // Private Methods
     // ================
+    /** Reads nothing player-specific, so every player shares one cached result */
+    findLeaderboard(name) {
+      return this.sdk.convexClient.query(api.sdk.leaderboards.findLeaderboard, {
+        gameCloudId: this.sdk.gameCloudId,
+        name
+      });
+    }
+    cacheLeaderboard(name, leaderboard) {
+      const { id, totalEntries } = leaderboard;
+      this.leaderboardCache.set(id, { id, name: leaderboard.name, totalEntries });
+      this.totalEntriesUpdatedAt.set(id, Date.now());
+      this.leaderboardIdsByName.set(name, id);
+    }
+    /**
+     * A copy of the cached leaderboard for a name, or null if its totalEntries
+     * is older than HANDLE_CACHE_TTL_MS so the caller refetches it
+     */
+    getCachedLeaderboardByName(name) {
+      const id = this.leaderboardIdsByName.get(name);
+      if (!id) return null;
+      const updatedAt = this.totalEntriesUpdatedAt.get(id) ?? 0;
+      if (Date.now() - updatedAt >= _LeaderboardManager2.HANDLE_CACHE_TTL_MS) {
+        return null;
+      }
+      const leaderboard = this.leaderboardCache.get(id);
+      return leaderboard ? { ...leaderboard } : null;
+    }
+    /**
+     * Run an entries query through its leaderboard's short-lived read cache,
+     * keyed by the full args. totalEntries is recorded once per network fetch,
+     * and skipped if an upload invalidated the cache while the fetch was in
+     * flight (the upload's own count is newer).
+     */
+    readEntries(leaderboardId, args, query) {
+      const cache = this.entryReadCaches.get(leaderboardId) ?? new PromiseCache(
+        _LeaderboardManager2.ENTRIES_CACHE_TTL_MS
+      );
+      this.entryReadCaches.set(leaderboardId, cache);
+      return cache.get(JSON.stringify(args), async () => {
+        const result = await query();
+        if (result && result.totalEntries && this.entryReadCaches.get(leaderboardId) === cache) {
+          this.updateCachedTotalEntries(leaderboardId, result.totalEntries);
+        }
+        return result;
+      });
+    }
     updateCachedTotalEntries(leaderboardId, totalEntries) {
       const cachedLeaderboard = this.leaderboardCache.get(leaderboardId);
       if (cachedLeaderboard && typeof totalEntries === "number") {
@@ -12627,9 +13026,13 @@ Event: ${getEventDescription(event)}`
           ...cachedLeaderboard,
           totalEntries
         });
+        this.totalEntriesUpdatedAt.set(leaderboardId, Date.now());
       }
     }
   };
+  _LeaderboardManager.ENTRIES_CACHE_TTL_MS = 2e3;
+  _LeaderboardManager.HANDLE_CACHE_TTL_MS = 3e4;
+  var LeaderboardManager = _LeaderboardManager;
   function getErrorMessage(error2) {
     if (error2 instanceof ConvexError) {
       const data = error2.data;
@@ -12657,16 +13060,19 @@ Event: ${getEventDescription(event)}`
       this.lobbyMessagesCursor = null;
       this.maybeBeingDeletedLobbyIds = /* @__PURE__ */ new Set();
       this.resetMaybeBeingDeletedLobbyIdTimeouts = /* @__PURE__ */ new Map();
-      this.inFlightMetadataUpdate = null;
       this.cachedLobbies = {};
+      this.lobbyListCache = new PromiseCache(
+        _LobbyManager2.LOBBY_LIST_CACHE_TTL_MS
+      );
       this.unsubscribeLobbyInvites = null;
       this.seenInviteIds = /* @__PURE__ */ new Set();
       this.p2pUpdateQueue = Promise.resolve();
-      this.throttledSetMetadata = throttle2(
-        () => this.setMetadata(),
-        _LobbyManager2.METADATA_UPDATE_THROTTLE_MS,
-        { leading: false, trailing: true }
-      );
+      this.metadataSender = createThrottledSender({
+        waitMs: _LobbyManager2.METADATA_UPDATE_THROTTLE_MS,
+        leading: false,
+        hasPending: () => this.lobbyId !== null && Object.keys(this.pendingMetadataUpdates).length > 0,
+        send: () => this.setMetadata()
+      });
       this.processUserUpdates = (newUsers) => {
         this.sdk.friendsManager.cacheUsers(newUsers);
         const previousUsers = this.lobbyUsers;
@@ -12682,10 +13088,7 @@ Event: ${getEventDescription(event)}`
               WavedashEvents.LOBBY_USERS_UPDATED,
               {
                 ...user,
-                userAvatarUrl: getAvatarUrl(
-                  user.userAvatarUrl,
-                  this.sdk.uploadsHost
-                ),
+                userAvatarUrl: getAvatarUrl(user.userAvatarUrl, this.sdk),
                 changeType: LobbyUserChangeType.JOINED
               }
             );
@@ -12702,10 +13105,7 @@ Event: ${getEventDescription(event)}`
               WavedashEvents.LOBBY_USERS_UPDATED,
               {
                 ...user,
-                userAvatarUrl: getAvatarUrl(
-                  user.userAvatarUrl,
-                  this.sdk.uploadsHost
-                ),
+                userAvatarUrl: getAvatarUrl(user.userAvatarUrl, this.sdk),
                 isHost: false,
                 changeType: LobbyUserChangeType.LEFT
               }
@@ -12728,10 +13128,13 @@ Event: ${getEventDescription(event)}`
         for (const invite of invites) {
           if (!this.seenInviteIds.has(invite.notificationId)) {
             this.seenInviteIds.add(invite.notificationId);
-            this.sdk.gameEventManager.notifyGame(
-              WavedashEvents.LOBBY_INVITE,
-              invite
-            );
+            this.sdk.gameEventManager.notifyGame(WavedashEvents.LOBBY_INVITE, {
+              ...invite,
+              sender: {
+                ...invite.sender,
+                avatarUrl: getAvatarUrl(invite.sender.avatarUrl, this.sdk)
+              }
+            });
           }
         }
         this.seenInviteIds = new Set(
@@ -12776,7 +13179,7 @@ Event: ${getEventDescription(event)}`
       }
       return this.lobbyUsers.map((user) => ({
         ...user,
-        userAvatarUrl: getAvatarUrl(user.userAvatarUrl, this.sdk.uploadsHost)
+        userAvatarUrl: getAvatarUrl(user.userAvatarUrl, this.sdk)
       }));
     }
     getHostId(lobbyId) {
@@ -12809,7 +13212,7 @@ Event: ${getEventDescription(event)}`
         this.lobbyMetadata[key] = value;
       }
       this.pendingMetadataUpdates[key] = value;
-      this.throttledSetMetadata();
+      this.metadataSender.schedule();
       return true;
     }
     getLobbyMaxPlayers(lobbyId) {
@@ -12829,9 +13232,13 @@ Event: ${getEventDescription(event)}`
     }
     async leaveLobby(lobbyId) {
       this.cleanupLobbyState();
-      await this.sdk.convexClient.mutation(api.sdk.gameLobby.leaveLobby, {
-        lobbyId
-      });
+      try {
+        await this.sdk.convexClient.mutation(api.sdk.gameLobby.leaveLobby, {
+          lobbyId
+        });
+      } finally {
+        this.lobbyListCache.clear();
+      }
       this.sdk.iframeMessenger.postToParent(IFRAME_MESSAGE_TYPE.LOBBY_LEFT, {
         lobbyId
       });
@@ -12839,10 +13246,16 @@ Event: ${getEventDescription(event)}`
     }
     // TODO: Implement more query filters (IP distance, arbitrary key/value matching, etc)
     async listAvailableLobbies(friendsOnly = false) {
-      const filters = friendsOnly ? { friendsOnly } : void 0;
-      const lobbies = await this.sdk.convexClient.query(
-        api.sdk.gameLobby.listAvailable,
-        { filters }
+      const lobbies = await this.lobbyListCache.get(
+        friendsOnly,
+        () => friendsOnly ? this.sdk.convexClient.query(api.sdk.gameLobby.listAvailable, {
+          filters: { friendsOnly }
+        }) : (
+          // Reads nothing player-specific, so every player shares one cached result
+          this.sdk.convexClient.query(api.sdk.gameLobby.listPublicLobbies, {
+            gameCloudId: this.sdk.gameCloudId
+          })
+        )
       );
       const filteredLobbies = lobbies.filter(
         (lobby) => !this.maybeBeingDeletedLobbyIds.has(lobby.lobbyId)
@@ -12927,11 +13340,15 @@ Event: ${getEventDescription(event)}`
      */
     handleLobbyJoin(response) {
       this.cleanupLobbyState(response.lobbyId);
+      this.lobbyListCache.clear();
       this.lobbyHostId = response.hostId;
       this.lobbyUsers = response.users;
       this.lobbyMetadata = response.metadata;
       this.sdk.p2pManager.setSignalingCursor(response.joinCommitTs);
       this.sdk.friendsManager.cacheUsers(response.users);
+      if (response.entitlementsShared) {
+        this.sdk.paidContentManager.watchSharedEntitlements();
+      }
       this.subscribeToLobbyMessages(response.lobbyId);
       this.unsubscribeLobbyData = this.sdk.convexClient.onUpdate(
         api.sdk.gameLobby.getLobbyMetadata,
@@ -12964,7 +13381,10 @@ Event: ${getEventDescription(event)}`
       this.sdk.gameEventManager.notifyGame(WavedashEvents.LOBBY_JOINED, {
         lobbyId: response.lobbyId,
         hostId: response.hostId,
-        users: response.users,
+        users: response.users.map((user) => ({
+          ...user,
+          userAvatarUrl: getAvatarUrl(user.userAvatarUrl, this.sdk)
+        })),
         metadata: response.metadata
       });
       logger.debug("Subscribed to lobby:", response.lobbyId);
@@ -13006,7 +13426,7 @@ Event: ${getEventDescription(event)}`
     cleanupLobbyState(nextLobbyId = null) {
       const currentLobbyId = this.lobbyId;
       this.setLobbyId(nextLobbyId);
-      this.throttledSetMetadata.cancel();
+      this.metadataSender.cancel();
       this.pendingMetadataUpdates = {};
       if (this.unsubscribeLobbyMessages) {
         this.unsubscribeLobbyMessages();
@@ -13063,23 +13483,21 @@ Event: ${getEventDescription(event)}`
       this.maybeBeingDeletedLobbyIds.clear();
       this.seenInviteIds.clear();
       this.cachedLobbies = {};
+      this.lobbyListCache.clear();
     }
-    setMetadata() {
-      if (this.inFlightMetadataUpdate !== null) return;
-      if (this.lobbyId === null) return;
-      if (Object.keys(this.pendingMetadataUpdates).length === 0) return;
+    async setMetadata() {
       const lobbyId = this.lobbyId;
       const updates = this.pendingMetadataUpdates;
       this.pendingMetadataUpdates = {};
-      this.inFlightMetadataUpdate = this.sdk.convexClient.mutation(api.sdk.gameLobby.setLobbyMetadata, { lobbyId, updates }).catch((error2) => {
+      try {
+        await this.sdk.convexClient.mutation(api.sdk.gameLobby.setLobbyMetadata, {
+          lobbyId,
+          updates
+        });
+      } catch (error2) {
         logger.error("Error updating lobby metadata:", error2);
         this.handleLobbyMutationError(lobbyId, error2);
-      }).finally(() => {
-        this.inFlightMetadataUpdate = null;
-        if (Object.keys(this.pendingMetadataUpdates).length > 0) {
-          this.throttledSetMetadata();
-        }
-      });
+      }
     }
     /**
      * (Re)subscribe to lobby messages from the current cursor: the latest 10
@@ -13143,6 +13561,7 @@ Event: ${getEventDescription(event)}`
     }
   };
   _LobbyManager.METADATA_UPDATE_THROTTLE_MS = 150;
+  _LobbyManager.LOBBY_LIST_CACHE_TTL_MS = 2e3;
   var LobbyManager = _LobbyManager;
   var DEFAULT_P2P_CONFIG = {
     enableReliableChannel: true,
@@ -14762,6 +15181,7 @@ Event: ${getEventDescription(event)}`
       this.purchaseUpdates = Promise.resolve();
       this.entitlementChecks = Promise.resolve();
       this.unsubscribePurchases = null;
+      this.unsubscribeEntitlements = null;
       this.destroyed = false;
       void this.sdk.authManager.firstAuthenticatedAt.then((since) => {
         if (this.destroyed) return;
@@ -14829,10 +15249,15 @@ Event: ${getEventDescription(event)}`
     }
     /** Force-refresh the gameplay JWT only if its `ents` lacks any of these identifiers. */
     ensureJwtEntitles(contentIdentifiers) {
+      return this.refreshJwtUnless(
+        (entitlements) => contentIdentifiers.every((id) => entitlements.includes(id))
+      );
+    }
+    refreshJwtUnless(satisfied) {
       const check = async () => {
         const jwt = await this.sdk.ensureGameplayJwt();
         const entitlements = readJwtClaim(jwt, "ents") ?? [];
-        if (contentIdentifiers.every((id) => entitlements.includes(id))) return;
+        if (satisfied(entitlements)) return;
         await this.sdk.ensureGameplayJwt(true);
       };
       const result = this.entitlementChecks.then(check, check);
@@ -14840,12 +15265,34 @@ Event: ${getEventDescription(event)}`
       });
       return result;
     }
+    watchSharedEntitlements() {
+      if (this.destroyed || this.unsubscribeEntitlements) return;
+      this.unsubscribeEntitlements = this.sdk.convexClient.onUpdate(
+        api.sdk.paidContent.listEntitlements,
+        {},
+        (expected) => {
+          this.refreshJwtUnless(
+            (entitlements) => entitlements.length === expected.length && expected.every((id) => entitlements.includes(id))
+          ).catch((err) => {
+            logger.error(
+              "Failed to refresh gameplay JWT for shared entitlements",
+              err
+            );
+          });
+        },
+        (error2) => {
+          logger.error(`Entitlements subscription error: ${error2}`);
+        }
+      );
+    }
     async isEntitled(contentIdentifier) {
+      await this.entitlementChecks;
       const jwt = await this.sdk.ensureGameplayJwt();
       const entitlements = readJwtClaim(jwt, "ents") ?? [];
       return entitlements.includes(contentIdentifier);
     }
     async getEntitlements() {
+      await this.entitlementChecks;
       const jwt = await this.sdk.ensureGameplayJwt();
       const entitlements = readJwtClaim(jwt, "ents") ?? [];
       return entitlements;
@@ -14919,10 +15366,397 @@ Event: ${getEventDescription(event)}`
       this.destroyed = true;
       this.unsubscribePurchases?.();
       this.unsubscribePurchases = null;
+      this.unsubscribeEntitlements?.();
+      this.unsubscribeEntitlements = null;
       this.restorePointerLock?.();
       this.restorePointerLock = void 0;
       this.restoreGamepads?.();
       this.restoreGamepads = void 0;
+    }
+  };
+  var MODIFIER_CODES = /* @__PURE__ */ new Set([
+    "ShiftLeft",
+    "ShiftRight",
+    "ControlLeft",
+    "ControlRight",
+    "AltLeft",
+    "AltRight",
+    "MetaLeft",
+    "MetaRight",
+    "CapsLock",
+    "Fn"
+  ]);
+  function hotkeyFromEvent(event) {
+    if (!event.code || MODIFIER_CODES.has(event.code)) return null;
+    const parts = [];
+    if (event.ctrlKey) parts.push("Ctrl");
+    if (event.altKey) parts.push("Alt");
+    if (event.shiftKey) parts.push("Shift");
+    if (event.metaKey) parts.push("Meta");
+    parts.push(event.code);
+    return parts.join("+");
+  }
+  var CAPTURE_FPS = 60;
+  var TIMESLICE_MS = 1e3;
+  var MAX_CAPTURE_EDGE = 1600;
+  var VIDEO_BITS_PER_SECOND = 1e7;
+  var MIME_CANDIDATES_WITH_AUDIO = [
+    'video/mp4;codecs="avc1.42E01E,mp4a.40.2"',
+    "video/mp4",
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp9",
+    "video/webm;codecs=vp8,opus",
+    "video/webm"
+  ];
+  var MIME_CANDIDATES_VIDEO_ONLY = [
+    'video/mp4;codecs="avc1.42E01E"',
+    "video/mp4",
+    "video/webm;codecs=vp9",
+    "video/webm;codecs=vp8",
+    "video/webm"
+  ];
+  function pickMimeType(hasAudio) {
+    if (typeof MediaRecorder === "undefined" || typeof MediaRecorder.isTypeSupported !== "function") {
+      return null;
+    }
+    const candidates = hasAudio ? MIME_CANDIDATES_WITH_AUDIO : MIME_CANDIDATES_VIDEO_ONLY;
+    for (const mime of candidates) {
+      if (MediaRecorder.isTypeSupported(mime)) return mime;
+    }
+    return null;
+  }
+  function isElementHidden(element) {
+    const win = element.ownerDocument.defaultView;
+    if (element.getClientRects().length === 0) return true;
+    if (win.getComputedStyle(element).visibility !== "visible") return true;
+    for (let current = element; current; current = current.parentElement) {
+      if (win.getComputedStyle(current).opacity === "0") return true;
+    }
+    return false;
+  }
+  function errorMessage(error2) {
+    return error2 instanceof Error ? error2.message : String(error2);
+  }
+  var ScreenCaptureManager = class extends WavedashManager {
+    constructor(sdk, recordingHotkey) {
+      super(sdk);
+      this.active = null;
+      this.stopping = null;
+      this.pendingStart = null;
+      this.hotkeyWindows = /* @__PURE__ */ new Set();
+      this.handleRecordingChanged = (data) => {
+        if (data.isRecording) {
+          if (this.active) return;
+          if (this.stopping) {
+            this.pendingStart = data;
+            return;
+          }
+          this.start(data);
+        } else {
+          this.pendingStart = null;
+          void this.stop();
+        }
+      };
+      this.handleHotkeyChanged = (data) => {
+        this.hotkey = typeof data.hotkey === "string" && data.hotkey ? data.hotkey : null;
+      };
+      this.handleKeyDown = (event) => {
+        if (!this.hotkey || event.repeat) return;
+        if (hotkeyFromEvent(event) !== this.hotkey) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.sdk.iframeMessenger.postToParent(
+          IFRAME_MESSAGE_TYPE.RECORDING_HOTKEY_PRESSED,
+          {}
+        );
+      };
+      this.hotkey = recordingHotkey || null;
+      this.sdk.iframeMessenger.addEventListener(
+        IFRAME_MESSAGE_TYPE.RECORDING_CHANGED,
+        this.handleRecordingChanged
+      );
+      this.sdk.iframeMessenger.addEventListener(
+        IFRAME_MESSAGE_TYPE.RECORDING_HOTKEY_CHANGED,
+        this.handleHotkeyChanged
+      );
+      this.unsubscribeFrames = this.sdk.sameOriginFrames.subscribe({
+        attach: (win) => {
+          win.addEventListener("keydown", this.handleKeyDown, true);
+          this.hotkeyWindows.add(win);
+        },
+        detach: (win) => {
+          this.hotkeyWindows.delete(win);
+          this.removeKeyListener(win);
+        }
+      });
+    }
+    start(options) {
+      const canvas = this.pickCanvas();
+      if (!canvas) {
+        this.postFailure(
+          options.recordingId,
+          "No game canvas found.",
+          "no-canvas"
+        );
+        return;
+      }
+      let capture2;
+      try {
+        capture2 = this.createFixedSizeCapture(canvas);
+      } catch (error2) {
+        this.postFailure(
+          options.recordingId,
+          `canvas.captureStream failed: ${errorMessage(error2)}`
+        );
+        return;
+      }
+      const stream = capture2.stream;
+      let audioTap = null;
+      try {
+        audioTap = this.sdk.audioManager.createCaptureTap();
+        if (audioTap) {
+          for (const track of audioTap.tracks) stream.addTrack(track);
+        }
+      } catch (error2) {
+        logger.warn("Screen capture: audio tap unavailable", error2);
+        audioTap = null;
+      }
+      const mimeType = pickMimeType(stream.getAudioTracks().length > 0);
+      const chunks = [];
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, {
+          ...mimeType ? { mimeType } : {},
+          videoBitsPerSecond: VIDEO_BITS_PER_SECOND
+        });
+        recorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) chunks.push(event.data);
+        };
+        recorder.start(TIMESLICE_MS);
+      } catch (error2) {
+        for (const track of stream.getTracks()) track.stop();
+        capture2.dispose();
+        audioTap?.dispose();
+        this.postFailure(
+          options.recordingId,
+          `MediaRecorder failed: ${errorMessage(error2)}`
+        );
+        return;
+      }
+      const active = {
+        recorder,
+        chunks,
+        mimeType,
+        capture: capture2,
+        audioTap,
+        startedAt: Date.now(),
+        recordingId: options.recordingId,
+        error: null
+      };
+      recorder.onerror = (event) => {
+        logger.error("Screen capture: recorder error", event);
+        const error2 = event.error;
+        active.error = error2 ? `Recorder error: ${errorMessage(error2)}` : "Recorder error";
+        if (this.active === active) void this.stop();
+      };
+      this.active = active;
+      logger.info(
+        `Screen capture: recording started ${capture2.width}x${capture2.height} @ ${CAPTURE_FPS}fps`,
+        mimeType
+      );
+    }
+    stop() {
+      if (this.stopping) return this.stopping;
+      const active = this.active;
+      if (!active) return Promise.resolve();
+      this.active = null;
+      this.stopping = this.finish(active).finally(() => {
+        this.stopping = null;
+        const pending = this.pendingStart;
+        this.pendingStart = null;
+        if (pending) this.start(pending);
+      });
+      return this.stopping;
+    }
+    // Flush a stopped recording and report it to the parent
+    async finish(active) {
+      await new Promise((resolve) => {
+        if (active.recorder.state === "inactive") {
+          resolve();
+          return;
+        }
+        active.recorder.onstop = () => resolve();
+        try {
+          active.recorder.stop();
+        } catch {
+          resolve();
+        }
+      });
+      for (const track of active.capture.stream.getTracks()) track.stop();
+      active.capture.dispose();
+      active.audioTap?.dispose();
+      if (active.error) {
+        this.postFailure(active.recordingId, active.error);
+        return;
+      }
+      const blob = new Blob(
+        active.chunks,
+        active.mimeType ? { type: active.mimeType } : void 0
+      );
+      const durationMs = Date.now() - active.startedAt;
+      logger.info(
+        `Screen capture: recording finished, ${blob.size} bytes over ${durationMs}ms`
+      );
+      this.postToParent({
+        success: true,
+        ...active.recordingId !== void 0 && {
+          recordingId: active.recordingId
+        },
+        blob,
+        mimeType: active.mimeType ?? blob.type,
+        width: active.capture.width,
+        height: active.capture.height,
+        durationMs
+      });
+    }
+    // `reason` is machine-readable for the player-facing message; `error` is free-form detail
+    postFailure(recordingId, error2, reason) {
+      logger.warn(`Screen capture: ${error2}`);
+      this.postToParent({
+        success: false,
+        error: error2,
+        ...recordingId !== void 0 && { recordingId },
+        ...reason && { reason }
+      });
+    }
+    postToParent(payload) {
+      this.sdk.iframeMessenger.postToParent(
+        IFRAME_MESSAGE_TYPE.RECORDING_COMPLETE,
+        payload
+      );
+    }
+    // Letterboxes the source into a fixed-size canvas, since MediaRecorder breaks if its input resolution changes
+    createFixedSizeCapture(source2) {
+      const rect = source2.getBoundingClientRect();
+      const dpr = source2.ownerDocument.defaultView.devicePixelRatio;
+      const sourceWidth = rect.width ? rect.width * dpr : source2.width;
+      const sourceHeight = rect.height ? rect.height * dpr : source2.height;
+      const scale = Math.min(
+        1,
+        MAX_CAPTURE_EDGE / Math.max(sourceWidth, sourceHeight)
+      );
+      const width = Math.max(2, Math.round(sourceWidth * scale / 2) * 2);
+      const height = Math.max(2, Math.round(sourceHeight * scale / 2) * 2);
+      const output = document.createElement("canvas");
+      output.width = width;
+      output.height = height;
+      const ctx = output.getContext("2d", { alpha: false });
+      if (!ctx) throw new Error("2D context unavailable");
+      const sourceStream = source2.captureStream(CAPTURE_FPS);
+      const video = document.createElement("video");
+      this.sdk.audioManager.ignoreMediaElement(video);
+      video.muted = true;
+      video.playsInline = true;
+      video.srcObject = sourceStream;
+      video.play().catch(() => {
+      });
+      const draw = () => {
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        if (!vw || !vh) return;
+        const fit = Math.min(width / vw, height / vh);
+        const dw = vw * fit;
+        const dh = vh * fit;
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(video, (width - dw) / 2, (height - dh) / 2, dw, dh);
+      };
+      let cancelDraws;
+      if (typeof video.requestVideoFrameCallback === "function") {
+        let handle = 0;
+        const onFrame = () => {
+          draw();
+          handle = video.requestVideoFrameCallback(onFrame);
+        };
+        handle = video.requestVideoFrameCallback(onFrame);
+        cancelDraws = () => video.cancelVideoFrameCallback(handle);
+      } else {
+        let handle = 0;
+        const onFrame = () => {
+          draw();
+          handle = requestAnimationFrame(onFrame);
+        };
+        handle = requestAnimationFrame(onFrame);
+        cancelDraws = () => cancelAnimationFrame(handle);
+      }
+      return {
+        stream: output.captureStream(CAPTURE_FPS),
+        width,
+        height,
+        dispose: () => {
+          cancelDraws();
+          video.pause();
+          video.srcObject = null;
+          for (const track of sourceStream.getTracks()) track.stop();
+        }
+      };
+    }
+    // Most visible on-screen area wins, then backing-store size; ties go to the earliest (beneath overlays)
+    pickCanvas() {
+      if (typeof document === "undefined") return null;
+      let best = null;
+      let bestScore = [-1, -1];
+      const visit2 = (doc, frameHidden) => {
+        const win = doc.defaultView;
+        doc.querySelectorAll("canvas").forEach((canvas) => {
+          const rect = canvas.getBoundingClientRect();
+          const visibleWidth = Math.max(
+            0,
+            Math.min(rect.right, win.innerWidth) - Math.max(rect.left, 0)
+          );
+          const visibleHeight = Math.max(
+            0,
+            Math.min(rect.bottom, win.innerHeight) - Math.max(rect.top, 0)
+          );
+          const score = [
+            frameHidden || isElementHidden(canvas) ? 0 : visibleWidth * visibleHeight,
+            canvas.width * canvas.height
+          ];
+          if (score[0] > bestScore[0] || score[0] === bestScore[0] && score[1] > bestScore[1]) {
+            bestScore = score;
+            best = canvas;
+          }
+        });
+        doc.querySelectorAll("iframe").forEach((iframe) => {
+          if (iframe.contentDocument) {
+            visit2(iframe.contentDocument, frameHidden || isElementHidden(iframe));
+          }
+        });
+      };
+      visit2(document, false);
+      return best;
+    }
+    removeKeyListener(win) {
+      try {
+        win.removeEventListener("keydown", this.handleKeyDown, true);
+      } catch {
+      }
+    }
+    destroy() {
+      this.sdk.iframeMessenger.removeEventListener(
+        IFRAME_MESSAGE_TYPE.RECORDING_CHANGED,
+        this.handleRecordingChanged
+      );
+      this.sdk.iframeMessenger.removeEventListener(
+        IFRAME_MESSAGE_TYPE.RECORDING_HOTKEY_CHANGED,
+        this.handleHotkeyChanged
+      );
+      this.unsubscribeFrames();
+      this.hotkeyWindows.forEach((win) => this.removeKeyListener(win));
+      this.hotkeyWindows.clear();
+      this.pendingStart = null;
+      void this.stop();
+      super.destroy();
     }
   };
   var STORE_THROTTLE_MS = 1e3;
@@ -14937,11 +15771,11 @@ Event: ${getEventDescription(event)}`
       this.knownAchievementIds = /* @__PURE__ */ new Set();
       this.loaded = { stats: false, achievements: false };
       this.subscriptions = [];
-      this.inFlightPersist = null;
-      this.flushRequested = false;
-      this.throttledPersist = throttle2(() => this.persist(), STORE_THROTTLE_MS, {
+      this.persistSender = createThrottledSender({
+        waitMs: STORE_THROTTLE_MS,
         leading: false,
-        trailing: true
+        hasPending: () => this.dirtyStats.size > 0 || this.dirtyAchievements.size > 0,
+        send: () => this.persist()
       });
       this.subscribe();
       this.requestStats().catch((error2) => {
@@ -14949,7 +15783,7 @@ Event: ${getEventDescription(event)}`
       });
     }
     destroy() {
-      this.throttledPersist.cancel();
+      this.persistSender.cancel();
       for (const unsub of this.subscriptions) unsub();
       this.subscriptions = [];
     }
@@ -14962,8 +15796,8 @@ Event: ${getEventDescription(event)}`
     subscribe() {
       this.subscriptions.push(
         this.sdk.convexClient.onUpdate(
-          api.sdk.gameAchievements.listStatIdentifiers,
-          {},
+          api.sdk.gameAchievements.listGameStatIdentifiers,
+          { gameCloudId: this.sdk.gameCloudId },
           (ids) => {
             this.knownStatIds = new Set(ids);
           },
@@ -14972,8 +15806,8 @@ Event: ${getEventDescription(event)}`
           }
         ),
         this.sdk.convexClient.onUpdate(
-          api.sdk.gameAchievements.listAchievementIdentifiers,
-          {},
+          api.sdk.gameAchievements.listGameAchievementIdentifiers,
+          { gameCloudId: this.sdk.gameCloudId },
           (ids) => {
             this.knownAchievementIds = new Set(ids);
           },
@@ -15011,23 +15845,13 @@ Event: ${getEventDescription(event)}`
     }
     storeStats() {
       if (!this.isReady()) return false;
-      this.throttledPersist();
-      this.requestPersistFlush();
+      this.persistSender.schedule();
+      this.persistSender.flush();
       return true;
     }
-    // Force-fire the throttled persist now. If a mutation is already in flight,
-    // the gate will swallow the flush(), so we also flag flushRequested so the
-    // next .finally() flushes again instead of waiting a full throttle window.
-    requestPersistFlush() {
-      if (this.inFlightPersist !== null) this.flushRequested = true;
-      this.throttledPersist.flush();
-    }
-    persist() {
-      if (this.inFlightPersist !== null) return;
-      if (this.dirtyStats.size === 0 && this.dirtyAchievements.size === 0) return;
+    async persist() {
       const pending = this.getPendingData();
-      if (!pending) return;
-      this.inFlightPersist = Promise.all([
+      await Promise.all([
         pending.stats.length > 0 ? this.sdk.convexClient.mutation(
           api.sdk.gameAchievements.setUserGameStats,
           { stats: pending.stats }
@@ -15047,14 +15871,6 @@ Event: ${getEventDescription(event)}`
           success: false,
           message
         });
-      }).finally(() => {
-        this.inFlightPersist = null;
-        const shouldFlushNow = this.flushRequested;
-        this.flushRequested = false;
-        if (this.dirtyStats.size > 0 || this.dirtyAchievements.size > 0) {
-          this.throttledPersist();
-          if (shouldFlushNow) this.throttledPersist.flush();
-        }
       });
     }
     // ================
@@ -15069,9 +15885,9 @@ Event: ${getEventDescription(event)}`
       if (this.stats.get(identifier) !== value) {
         this.stats.set(identifier, value);
         this.dirtyStats.add(identifier);
-        this.throttledPersist();
+        this.persistSender.schedule();
       }
-      if (storeNow) this.requestPersistFlush();
+      if (storeNow) this.persistSender.flush();
       return true;
     }
     // ================
@@ -15088,9 +15904,9 @@ Event: ${getEventDescription(event)}`
       if (!this.unlockedAchievements.has(identifier)) {
         this.unlockedAchievements.add(identifier);
         this.dirtyAchievements.add(identifier);
-        this.throttledPersist();
+        this.persistSender.schedule();
       }
-      if (storeNow) this.requestPersistFlush();
+      if (storeNow) this.persistSender.flush();
       return true;
     }
     /** @destructive - Returns the pending stats and achievements and resets the dirty collections */
@@ -15337,6 +16153,124 @@ Event: ${getEventDescription(event)}`
     }
     return sdk;
   }
+  var SameOriginFrames = class {
+    constructor() {
+      this.listeners = /* @__PURE__ */ new Set();
+      this.frames = /* @__PURE__ */ new Map();
+      this.iframeBindings = /* @__PURE__ */ new WeakMap();
+      this.iframeLoadHandlers = /* @__PURE__ */ new Map();
+      if (typeof window !== "undefined") this.attachFrame(window);
+    }
+    // Attaches every current frame immediately, then reports changes; returns an unsubscribe
+    subscribe(listener) {
+      this.listeners.add(listener);
+      this.frames.forEach((_, win) => this.notify(listener, "attach", win));
+      return () => {
+        this.listeners.delete(listener);
+      };
+    }
+    // One subscriber throwing must not block the others or leave frame state half-updated
+    notify(listener, event, win) {
+      try {
+        listener[event](win);
+      } catch (error2) {
+        logger.error(`SameOriginFrames: ${event} subscriber threw`, error2);
+      }
+    }
+    attachFrame(win) {
+      const doc = win.document;
+      const record = {
+        observer: new win.MutationObserver((mutations) => {
+          for (const m of mutations) {
+            m.addedNodes.forEach(
+              (node) => this.iframesIn(win, node).forEach(
+                (iframe) => this.bindIframe(iframe, record)
+              )
+            );
+            m.removedNodes.forEach(
+              (node) => this.iframesIn(win, node).forEach(
+                (iframe) => this.unbindIframe(iframe, record)
+              )
+            );
+          }
+        }),
+        children: /* @__PURE__ */ new Set()
+      };
+      this.frames.set(win, record);
+      this.listeners.forEach((listener) => this.notify(listener, "attach", win));
+      doc.querySelectorAll("iframe").forEach((iframe) => this.bindIframe(iframe, record));
+      record.observer.observe(doc.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    }
+    detachFrame(win) {
+      const record = this.frames.get(win);
+      if (!record) return;
+      record.observer.disconnect();
+      record.children.forEach((child2) => this.unbindIframe(child2, record));
+      this.frames.delete(win);
+      this.listeners.forEach((listener) => this.notify(listener, "detach", win));
+    }
+    // Skips the subtree scan for childless nodes, the common case on every DOM insertion
+    iframesIn(win, node) {
+      if (node instanceof win.HTMLIFrameElement) return [node];
+      if (!(node instanceof win.HTMLElement) || !node.firstElementChild)
+        return [];
+      return Array.from(node.querySelectorAll("iframe"));
+    }
+    bindIframe(iframe, parent2) {
+      if (!parent2.children.has(iframe)) {
+        parent2.children.add(iframe);
+        const onLoad = () => this.attachIframe(iframe);
+        this.iframeLoadHandlers.set(iframe, onLoad);
+        iframe.addEventListener("load", onLoad);
+      }
+      this.attachIframe(iframe);
+    }
+    unbindIframe(iframe, parent2) {
+      const onLoad = this.iframeLoadHandlers.get(iframe);
+      if (onLoad) iframe.removeEventListener("load", onLoad);
+      this.iframeLoadHandlers.delete(iframe);
+      parent2.children.delete(iframe);
+      this.detachIframe(iframe);
+    }
+    // Re-attaches when the iframe navigates to a fresh document; detaches when it becomes unreachable
+    attachIframe(iframe) {
+      let win = null;
+      let doc = null;
+      try {
+        win = iframe.contentWindow;
+        doc = win?.document ?? null;
+      } catch {
+        win = null;
+      }
+      if (!win || !doc) {
+        this.detachIframe(iframe);
+        return;
+      }
+      const existing = this.iframeBindings.get(iframe);
+      if (existing?.doc === doc) return;
+      if (existing) this.detachIframe(iframe);
+      this.iframeBindings.set(iframe, { win, doc });
+      this.attachFrame(win);
+    }
+    detachIframe(iframe) {
+      const binding = this.iframeBindings.get(iframe);
+      if (!binding) return;
+      this.iframeBindings.delete(iframe);
+      this.detachFrame(binding.win);
+    }
+    destroy() {
+      this.frames.forEach((record) => record.observer.disconnect());
+      this.frames.clear();
+      this.iframeLoadHandlers.forEach(
+        (onLoad, iframe) => iframe.removeEventListener("load", onLoad)
+      );
+      this.iframeLoadHandlers.clear();
+      this.listeners.clear();
+    }
+  };
   var SwMessenger = class {
     constructor() {
       this.handleMessage = (event) => {
@@ -15557,6 +16491,7 @@ Event: ${getEventDescription(event)}`
       this.gameFinishedLoading = false;
       this.gameStartedLoading = false;
       this.Events = WavedashEvents;
+      this.LanguageCode = LANGUAGE_CODE;
       this.LobbyVisibility = LOBBY_VISIBILITY;
       this.LeaderboardSortOrder = LEADERBOARD_SORT_ORDER;
       this.LeaderboardDisplayType = LEADERBOARD_DISPLAY_TYPE;
@@ -15574,14 +16509,17 @@ Event: ${getEventDescription(event)}`
       this.setupWarningTimeout = null;
       this.listenerWrappers = /* @__PURE__ */ new Map();
       this.convexClient = new ConvexClient(sdkConfig.convexCloudUrl, {
-        expectAuth: true
+        expectAuth: true,
+        initialAuthTokenReuse: true
       });
       this.gameCloudId = sdkConfig.gameCloudId;
+      this.pageViewId = sdkConfig.pageViewId;
       this.iframeMessenger = iframeMessenger;
       this.authManager = new AuthManager(this);
       this.wavedashUser = sdkConfig.wavedashUser;
       this.ugcHost = sdkConfig.ugcHost;
       this.uploadsHost = sdkConfig.uploadsHost;
+      this.staticHost = sdkConfig.staticHost;
       this.swMessenger = new SwMessenger();
       this.launchParamManager = new LaunchParamManager(
         this,
@@ -15597,7 +16535,12 @@ Event: ${getEventDescription(event)}`
       this.friendsManager = new FriendsManager(this);
       this.gameEventManager = new GameEventManager(this);
       this.fullscreenManager = new FullscreenManager(this);
+      this.sameOriginFrames = new SameOriginFrames();
       this.audioManager = new AudioManager(this, sdkConfig.initialVolume);
+      this.screenCaptureManager = new ScreenCaptureManager(
+        this,
+        sdkConfig.recordingHotkey
+      );
       this.paidContentManager = new PaidContentManager(this);
       this.externalLinkManager = new ExternalLinkManager(this);
       this.managers = [
@@ -15613,6 +16556,9 @@ Event: ${getEventDescription(event)}`
         this.friendsManager,
         this.gameEventManager,
         this.fullscreenManager,
+        // Out of construction order: an in-flight recording must start flushing
+        // while the audio graph its capture tap rides is still shimmed.
+        this.screenCaptureManager,
         this.audioManager,
         this.paidContentManager,
         this.externalLinkManager
@@ -15820,7 +16766,7 @@ Event: ${getEventDescription(event)}`
     getUser() {
       return this._formatResponse({
         ...this.wavedashUser,
-        avatarUrl: getAvatarUrl(this.wavedashUser.avatarUrl, this.uploadsHost)
+        avatarUrl: getAvatarUrl(this.wavedashUser.avatarUrl, this)
       });
     }
     getUsername(userId) {
@@ -15832,6 +16778,9 @@ Event: ${getEventDescription(event)}`
     }
     getUserId() {
       return this.wavedashUser.id;
+    }
+    getUserLanguage() {
+      return this.wavedashUser.language;
     }
     /**
      * Get the current user's gameplay JWT, fetching it if not already cached.
@@ -15869,7 +16818,7 @@ Event: ${getEventDescription(event)}`
      * Users are cached when seen via listFriends() or lobby membership.
      * @param userId - The user ID to get the avatar URL for
      * @param size - Size in pixels: a Wavedash.AvatarSize preset (SMALL=64, MEDIUM=128, LARGE=256) or a custom value. Defaults to MEDIUM.
-     * @returns CDN URL with size transformation, or null if user not cached or has no avatar
+     * @returns CDN URL with size transformation (Wavedash default avatar if none is set), or null if user not cached
      */
     getUserAvatarUrl(userId, size = this.AvatarSize.MEDIUM) {
       return this._apiCallSync(
@@ -16759,6 +17708,7 @@ Event: ${getEventDescription(event)}`
       for (const manager of this.managers) {
         manager.destroy();
       }
+      this.sameOriginFrames.destroy();
     }
     _setupSessionEndListeners() {
       iframeMessenger.addEventListener(
@@ -21023,8 +21973,34 @@ Event: ${getEventDescription(event)}`
               return gamepads;
             }
           });
-          view.addEventListener("gamepadconnected", (event) => {
-            if (event.gamepad !== publicGamepad) disconnectVirtualGamepad();
+          const announced = /* @__PURE__ */ new Map();
+          view.addEventListener("gamepadconnected", ({ gamepad: gamepad2 }) => {
+            announced.set(gamepad2.index, gamepad2.id);
+            if (gamepad2 !== publicGamepad) disconnectVirtualGamepad();
+          });
+          view.addEventListener("gamepaddisconnected", ({ gamepad: gamepad2 }) => {
+            if (announced.get(gamepad2.index) === gamepad2.id) announced.delete(gamepad2.index);
+          });
+          const addEventListener = view.addEventListener;
+          Object.defineProperty(view, "addEventListener", {
+            configurable: true,
+            writable: true,
+            value(type, listener, options) {
+              addEventListener.call(this, type, listener, options);
+              if (type !== "gamepadconnected" || !listener) return;
+              const gamepads = view.navigator.getGamepads().filter(
+                (gamepad2) => !!gamepad2?.connected && announced.get(gamepad2.index) === gamepad2.id
+              );
+              const handle = typeof listener === "function" ? listener : listener.handleEvent.bind(listener);
+              view.setTimeout(() => {
+                for (const gamepad2 of gamepads) {
+                  if (announced.get(gamepad2.index) !== gamepad2.id) continue;
+                  const event = new view.Event("gamepadconnected");
+                  Object.defineProperty(event, "gamepad", { value: gamepad2 });
+                  handle.call(view, event);
+                }
+              }, 0);
+            }
           });
           frameDocument.addEventListener(
             "load",

@@ -9,9 +9,9 @@
       "byteStart": 201,
       "byteEnd": 1363,
       "captureBytes": 1162,
-      "captureSha256": "b45167d01e0ac2de48abdefd41b6f7da3ecb63e03f574a2263efce31e6577d8a",
+      "captureSha256": "d9e9fa119b03ffa4c9bcc2a1f476c2f9c214aad2110724bdbe8b812923c52059",
       "prettyBytes": 1180,
-      "prettySha256": "df90ed5eff63d7c956933088dbe5f9b2358cdded9f61611c5ff399539fb4ab6f"
+      "prettySha256": "abcca7c5ab0ce1e96d9e3437ef3e0755d99978f29caa0198d2ce3d2d28558592"
     },
     {
       "file": "readable/index-inline-1.pretty.css",

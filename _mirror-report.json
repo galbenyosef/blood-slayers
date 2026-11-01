@@ -2,11 +2,11 @@
   "start": "https://wavedash.com/games/blood-slayers",
   "origin": "https://wavedash.com",
   "gated": false,
-  "sessionRenewal": "per-page-load playKey (server-rendered on the game page) -> embed shell -> ~1 h gameplay JWT (Authorization: Bearer) for every build-host request; minted fresh by tools/update.mjs / tools/capture.mjs",
-  "gameHost": "https://mx74mmkghvsq6thc1e56jtkkb18ft2yc-<fnv32(userId)>-<fnv32(gameBuildId)>.builds.wavedashcdn.com (per-user, per-build host; the capture was taken on the anonymous-user host d63d8679-0a5301b2, files verified byte-identical via the logged-in host abc3e19d-0a5301b2 and re-probed 2026-10-13: 414/414 identical)",
+  "sessionRenewal": "per-page-load playKey (since 2026-11-01 minted by the player's launch API POST /embed/api/game-launch, not server-rendered) -> embed shell -> ~1 h gameplay JWT (Authorization: Bearer) for every build-host request; minted fresh by tools/update.mjs / tools/capture.mjs",
+  "gameHost": "https://mx74mmkghvsq6thc1e56jtkkb18ft2yc-<fnv32(userId)>-<fnv32(gameBuildId)>.builds.wavedashcdn.com (per-user, per-build host; the capture was taken on the anonymous-user host d63d8679-0a5301b2, files verified byte-identical via the logged-in host abc3e19d-0a5301b2 and re-probed 2026-10-13: 414/414 identical; re-probed 2026-11-01 after the platform-embed-runtime refresh: 414/414 identical, game build 0a5301b2 unchanged)",
   "requests": 414,
   "fetched": 414,
-  "bytes": 255812894,
+  "bytes": 255847170,
   "paths": [
     "index.html",
     "olbaid.js",
@@ -30,7 +30,9 @@
     { "status": 404, "path": "assets/audio/{intro_theme,ending_theme,cutscene_theme,music_village}.wav", "probes": 4, "note": "these tracks are .mp3 — the .wav cross-product probes are absent by design" },
     { "status": 404, "path": "assets/audio/music/the_pit_c.mp3", "probes": 1, "note": "the litany name table lists demons_lair_a/b/c + the_pit_a/b (no _c)" },
     { "status": 404, "path": "auth/refresh", "probes": 1, "note": "SW-internal POST endpoint (`/auth/refresh`, POST only) — GET is not routed" },
-    { "status": 404, "path": "build-manifest.json / manifest.json / files.json / asset-manifest.json", "probes": 4, "note": "no build file listing is served on the CDN host; the closure was network-log-led plus the wasm-embedded name tables" }
+    { "status": 404, "path": "build-manifest.json / manifest.json / files.json / asset-manifest.json", "probes": 4, "note": "no build file listing is served on the CDN host; the closure was network-log-led plus the wasm-embedded name tables" },
+    { "status": 404, "path": "images/default-avatar.png, olbaid_bg.js, saves/characters.json", "probes": 3, "note": "re-probed 2026-11-01 during the closure scan of the refreshed embed.js/olbaid.js/olbaid_save.js: the SDK's default-avatar asset is not uploaded, olbaid_bg.js is the wasm-bindgen glue's dev path (the served glue is olbaid.js), saves/characters.json is a platform-side cloud-save path" },
+    { "status": 404, "path": "0.2.0-x.js / 3.0.x.js / 3.1.x.js / 3.x.js / 4.x.js / 6000.x.js", "probes": 6, "note": "2026-11-01 closure-scan false positives: semver/feature-detect strings inside the refreshed embed.js, not build-host paths (all 404)" }
   ],
   "external": [
     { "host": "convex-api.wavedash.com", "kind": "backend", "note": "Convex realtime backend for platform SDK state (rosters/cloud saves/lobbies) — dynamic endpoints, never captured" },
@@ -43,6 +45,7 @@
     "the build host requires auth: without the JWT every path 401s (except embed.js/embed.css/sw-embed.js, which are public)",
     "the embed document replaces its own body with index.html (document.write-style boot) and sw-embed.js authorizes every subsequent fetch",
     "build metadata at capture (2026-10-13): gameBuild mn71ja9zvk097ga9sp8jq92s6n8g3eg4, buildNumber 20, v1.1.1, engine CUSTOM, entrypoint index.html, buildSizeBytes 347715998; captured closure 255812894 bytes (the delta is upload-side build metadata/artifacts not reachable by any runtime request — probed exhaustively via the runtime network log and the wasm-embedded name tables)",
+    "2026-11-01 refresh: the platform page became a SvelteKit portal and the per-load playKey moved behind the launch API; the game build is unchanged (0a5301b2) — index.html, olbaid.js, sw-embed.js and all 410 assets reproduce byte-for-byte — but the platform embed runtime drifted: embed (1776 B, new sessionToken field + bumped ?v=), embed.css (9831 -> 9884 B), embed.js (732728 -> 766951 B, +34 KB SDK). Those three were re-captured, the superseded bytes archived under legacy/2026-11-01/ (sha256 in legacy/2026-11-01/SHA256SUMS), and readable/ + src/ re-derived; captured closure is now 255847170 bytes",
     "network logs: docs/network-log-2026-10-13.jsonl (browser session + runtime fetch record)"
   ]
 }

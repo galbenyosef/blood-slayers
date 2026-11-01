@@ -1,0 +1,53 @@
+{
+  "note": "inline <script>/<style> byte ranges + sha256 inside the captured documents",
+  "blocks": [
+    {
+      "file": "readable/embed-inline-1.pretty.js",
+      "source": "embed",
+      "kind": "script",
+      "block": 1,
+      "byteStart": 201,
+      "byteEnd": 1363,
+      "captureBytes": 1162,
+      "captureSha256": "b45167d01e0ac2de48abdefd41b6f7da3ecb63e03f574a2263efce31e6577d8a",
+      "prettyBytes": 1180,
+      "prettySha256": "df90ed5eff63d7c956933088dbe5f9b2358cdded9f61611c5ff399539fb4ab6f"
+    },
+    {
+      "file": "readable/index-inline-1.pretty.css",
+      "source": "index.html",
+      "kind": "style",
+      "block": 1,
+      "byteStart": 399,
+      "byteEnd": 2417,
+      "captureBytes": 2018,
+      "captureSha256": "e8b620b7f98de05be1e05fe3f228769cdc236467a1e4f7abe1971a3730cedc84",
+      "prettyBytes": 2094,
+      "prettySha256": "06f2baaeaf4a2f061aba954d1c26bef2036b268bbed31ab3227d3be2fee1c8e6"
+    },
+    {
+      "file": "readable/index-inline-1.pretty.js",
+      "source": "index.html",
+      "kind": "script",
+      "block": 1,
+      "byteStart": 2854,
+      "byteEnd": 3977,
+      "captureBytes": 1123,
+      "captureSha256": "383514ffebb04a854ed4839ff604f4bde429a497f3bf1da41fa6ee5a555b9469",
+      "prettyBytes": 1096,
+      "prettySha256": "01ec490db3b27d86108af747508b597cf66cd19a050b8c51b1efc669ba3f953b"
+    },
+    {
+      "file": "readable/index-inline-2.pretty.js",
+      "source": "index.html",
+      "kind": "script",
+      "block": 2,
+      "byteStart": 4011,
+      "byteEnd": 5624,
+      "captureBytes": 1613,
+      "captureSha256": "4167bbfd07a26ebc559cf707050e81b8e8d8137e21b2f2ec64155dc0481f85c2",
+      "prettyBytes": 1492,
+      "prettySha256": "9c42d6f3450307d09474b76036308d46057910d8c8f4c82756abca20c4b1ea1a"
+    }
+  ]
+}

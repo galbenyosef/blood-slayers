@@ -58,7 +58,7 @@ BLOOD SLAYERS — "The Five Seals" — is a 1.1.1 WebGPU action RPG (What To Do!
 Games) for 1–4 players: pick a Barbarian-Knight or a Sorcerer, fight down
 through procedurally-carved Ossuary floors (crypts, catacombs, …), hunt the
 Keywarden, break the Warden seals and take the loot. The mirror captures the
-game's complete build-host closure: **414 files, 255,812,894 bytes (244.0
+game's complete build-host closure: **414 files, 255,847,170 bytes (244.0
 MiB)** — entry, wasm engine payload, wasm-bindgen shims, the Wavedash embed
 shell (embed, embed.js, embed.css, sw-embed.js) and the entire asset tree:
 10 themed environment sets (all nine theme prefixes plus the generic crypt
@@ -124,8 +124,12 @@ and therefore carries one (long-expired, anonymous-session) `gameplayJwt` +
   FRAGMENT, not a defect.
 - `docs/cover.png` — cover (gameplay: the Barbarian-Knight fighting risen
   skeletons in the Forgotten Ossuary, mirror-served), `docs/boot-2026-10-13.png`
-  — boot evidence (offline character screen), `docs/network-log-2026-10-13.jsonl`
-  — the browser/runtime network record
+  and `docs/boot-2026-11-01-refresh.png` — boot evidence (offline character
+  screen), `docs/network-log-2026-10-13.jsonl` — the browser/runtime network
+  record
+- `legacy/2026-11-01/` — the bytes this refresh replaced (the three platform
+  embed-runtime files + their superseded derived layer), with `SHA256SUMS`
+  (`sha256sum -c` verifies) and a `NOTE.md`; rollback path per PLAN §3
 
 ## Assets
 
@@ -176,6 +180,27 @@ cloud saves) and the game degrades to solo play.
 - Evidence: body 0 chars (canvas-rendered UI); canvas 1262x568; 0 console errors; 1 failed same-origin request, 0 blocked cross-origin; screenshot `docs/boot-2026-10-27.png`.
 - Gaps seen: `/favicon.ico` (browser default request, not part of the capture). The existing "fully playable offline / PLAYING SOLO" claim is confirmed.
 
+## Boot test (2026-11-01)
+
+- Entry: `http://127.0.0.1:4713/index.html` served by `tools/serve.mjs` with the
+  network blocked (`--host-resolver-rules="MAP * 127.0.0.1"`); port 4713 was
+  free in 4700–4799 (`curl` first).
+- Outcome: **rendered** — the loader cleared at ~5 s and the WebGPU engine drew
+  the character-creation screen ("CREATE A NEW SLAYER", Barbarian-Knight /
+  Sorcerer cards, "PLAYING SOLO") from the refreshed offline capture.
+- Evidence: canvas 1262x568; body 0 chars (canvas-rendered UI); 1 console error
+  (`/favicon.ico` 404 — browser default, not part of the capture) and 4 warnings
+  (3 AudioContext autoplay, 1 `powerPreference` ignored on Windows); 0 blocked
+  cross-origin; screenshot `docs/boot-2026-11-01-refresh.png`.
+- Flag note: headless Chrome 156 with `--use-angle=swiftshader` makes
+  `navigator.gpu.requestAdapter()` return **null** on this host (Dawn finds no
+  adapter and the engine panics "Unable to find a GPU"); dropping that one flag
+  while keeping `--enable-unsafe-swiftshader` gives a working adapter and the
+  engine renders, so the boot used
+  `--headless=new --enable-unsafe-swiftshader --host-resolver-rules="MAP * 127.0.0.1"`.
+- Gaps seen: `/favicon.ico` only. The "fully playable offline / PLAYING SOLO"
+  claim is re-confirmed on the refreshed capture.
+
 ## Verify
 
 ```
@@ -196,9 +221,14 @@ The probe re-derives the per-build CDN host from the live game page, mints a
 fresh anonymous playKey → gameplay JWT, and re-hashes every captured file
 against the manifest (the `embed` shell is compared token-normalized). The
 probe never rewrites the capture — a mirror is a point-in-time snapshot.
-Refreshing means `node tools/capture.mjs` into a clean tree, then
-`node tools/make-manifest.mjs . .upstream/manifest.json`, then re-deriving
-(`node tools/derive.mjs` + `node tools/audit.js`).
+`tools/capture.mjs` boots the same session and writes the fetched bytes at
+their served paths; it takes `--only <path>…` for a targeted re-capture (the
+2026-11-01 refresh used `--only embed embed.css embed.js`) or no filter for the
+full closure. Refreshing means: copy the bytes being replaced into
+`legacy/<date>/` (with a `SHA256SUMS`), then `node tools/capture.mjs` (or
+`--only`), then `node tools/make-manifest.mjs . .upstream/manifest.json`, then
+re-deriving (`node tools/derive.mjs` + `node tools/audit.js` +
+`node tools/verify.mjs`).
 
 **Extraction rule (re-pointed 2026-11-01).** The probe reads the build from the
 current markup/API, in this order, and fails loudly (exit 2, naming the missing
@@ -238,10 +268,43 @@ and creates no `*.tmp`. Re-probed the same day: **the game build is unchanged**
 `index.html`, `olbaid.js`, `sw-embed.js` and all 410 assets hash identically —
 but **three platform embed-runtime files drifted** (`embed` 1776→1776 B but a
 new `sessionToken` field and a bumped `?v=` asset version; `embed.css`
-9831→9884 B; `embed.js` 732728→766951 B). That drift is **real and
-unrefreshed**: refreshing is out of scope for this probe-fix lane (PLAN §3 —
-refresh needs a clean tree, a new manifest and a re-derive), so this mirror's
-drift probe reports `3 changed` until a refresh lane is run.
+9831→9884 B; `embed.js` 732728→766951 B). That drift was **real**, and was
+refreshed the same day (see *2026-11-01 refresh* below): the probe now reports
+`up to date`.
+
+### 2026-11-01 refresh
+
+The drift above was a **platform embed-runtime** change only — the game build
+did not move. The refresh (PLAN §3) was:
+
+1. **Re-probe + stability.** The repaired probe reported `3 changed, 0
+   live-missing` of 414 (build `0a5301b2`) on three separate runs, with
+   identical live hashes each time.
+2. **Trust gate (before any write).** Every still-served file was re-fetched
+   with a fresh JWT and re-hashed: **411 files reproduced byte-for-byte**
+   (`sha256` equal to the manifest, `index.html`/`olbaid.js`/`sw-embed.js` and
+   all 410 assets included) and the only differences were exactly `embed`
+   (token-normalized), `embed.css` and `embed.js`. `tools/verify.mjs` confirmed
+   the local capture matched the manifest (414, 0 problems) first.
+3. **Archive + re-capture.** The superseded bytes were copied to
+   `legacy/2026-11-01/` with `SHA256SUMS` before anything was overwritten, then
+   the three files were re-captured with the repaired `tools/capture.mjs`
+   (`--only embed embed.css embed.js`). No file went upstream-gone (`0
+   live-missing`). A PLAN §4 closure scan over the refreshed bundles found 10
+   referenced-but-uncaptured path literals, all of which 404 upstream (the
+   SDK's default-avatar asset, the glue's dev `olbaid_bg.js`, the cloud-save
+   `saves/characters.json`, and semver/feature-detect false positives in
+   `embed.js`) — the closure is closed.
+4. **Re-cut + re-derive.** `.upstream/manifest.json` was re-cut (414 files, 3
+   hashes changed, `generated: 2026-11-01`; `embed` stays `dynamic: true`), and
+   `readable/` + `src/` + `split-spec.json` re-derived from the new capture
+   (`embed.pretty.js` 23054→24093 lines, `embed.pretty.css` 636→640,
+   `embed-inline-1.pretty.js` and `src/embed-inline-1-01.js` re-cut). The
+   superseded derived layer is in `legacy/2026-11-01/` too.
+
+Refreshed capture: **414 files, 255,847,170 bytes (244.0 MiB)**, build
+`0a5301b2` (unchanged); `node tools/update.mjs` → `up to date: 414 captured
+files identical upstream (build 0a5301b2)`.
 
 ### 2026-10-13 derivation note
 
@@ -303,9 +366,11 @@ untouched — `node tools/verify.mjs` re-hashes all 414 files):
   (netstat). Boot: the mirror renders and plays offline — character creation,
   the Forgotten Ossuary, combat with risen skeletons, death/resurrect; cover
   and boot evidence in `docs/`. Rebuild with `node tools/derive.mjs`.
-- (The `update.mjs` line above is the **2026-10-13** result; the origin changed
-  shape on 2026-11-01 and the probe now reports `3 changed` — see
-  *Updating from upstream* for the re-pointed rule and the drift.)
+- (The `update.mjs` line above is the **2026-10-13** result. The origin changed
+  shape on 2026-11-01; the probe was re-pointed to the launch API, the
+  platform-embed drift it found was refreshed the same day, and the probe again
+  reports `up to date: 414 captured files identical upstream` — see
+  *Updating from upstream* and *2026-11-01 refresh*.)
 
 ## Mirror conventions
 
@@ -328,5 +393,5 @@ untouched — `node tools/verify.mjs` re-hashes all 414 files):
 <!-- cols: cls=classification · ver=verify 0 problems · upd=drift probe · man=manifest · rdbl=readable re-derived · src=reversed src · boot=boot test · top=offline-mirror topic · tag=backup tag · staged=staged not committed -->
 | # | repo | cls | ver | upd | man | rdbl | src | boot | top | tag | staged |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 311 | blood-slayers | mirror | ✓ | drift 2026-11-01 (probe re-pointed to the launch API; platform embed runtime: embed/embed.css/embed.js; game build 0a5301b2 unchanged) | ✓ | ✓ | ✓ | ✓ | ✓ | — | — |
+| 311 | blood-slayers | mirror | ✓ | ✓ 2026-11-01 refresh (platform embed runtime re-captured: embed/embed.css/embed.js; game build 0a5301b2 unchanged; probe now up to date) | ✓ | ✓ | ✓ | ✓ | ✓ | — | — |
 <!-- mirror-status:end -->

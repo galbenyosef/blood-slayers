@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-13",
+  "generated": "2026-11-01",
   "origin": "https://wavedash.com/games/blood-slayers",
   "files": {
     "assets/audio/ambient_loop.wav": {
@@ -1620,16 +1620,16 @@
     },
     "embed": {
       "bytes": 1776,
-      "sha256": "b2943f7b61e47c79daa06067ee5274433df1d9e15cf6a6fbb77c67623a7c9a58",
+      "sha256": "cbbb3ba04bb4ebfb49e2e3fc82f03cd242fc0803e525e845ebffe0afcdc46151",
       "dynamic": true
     },
     "embed.css": {
-      "bytes": 9831,
-      "sha256": "ab8c6ec5254b739d6b9270dbc3a79aacbcf56a5f353c2885ce5e870daf35d915"
+      "bytes": 9884,
+      "sha256": "a4cf19b93e2215edf9f249a909df3c10477d8898daa3d77c6ed59f0c8b29d93f"
     },
     "embed.js": {
-      "bytes": 732728,
-      "sha256": "0c3bd2aadac43a34b93f7b6b7ada0229f5a14b4dc2b4b3b5d3a49c3801dcee83"
+      "bytes": 766951,
+      "sha256": "73504aa10d384b02eb4ca9868939ae55de4e75786995b008f2f2150175860519"
     },
     "index.html": {
       "bytes": 5650,
