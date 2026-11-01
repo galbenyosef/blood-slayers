@@ -26,8 +26,16 @@ Source: https://wavedash.com/games/blood-slayers
   wavedash.com is a SvelteKit shell; the game itself is served by a **per-user,
   per-build CDN host**:
   `https://<gameCloudId>-<fnv32(userId)>-<fnv32(gameBuildId)>.builds.wavedashcdn.com`.
-  The page's SSR HTML carries the rotating **playKey**; the player iframe
-  requests `/embed?entrypoint=index.html&engine=CUSTOM&pk=<playKey>&sdkconfig=…`,
+  Since 2026-11-01 the page is a SvelteKit **portal**: its SSR HTML still carries
+  `gameCloud._id` / `gameBuild._id` (plus `engine`, `entrypoint`) in the inline
+  `kit.start()` data blob, but it **no longer carries `playKey`** (the old probe
+  looked for it there and broke). The per-load bootstrap is now minted by an API
+  endpoint the player calls — `POST /embed/api/game-launch` (embed player) or
+  `POST /api/game-launch` (the game page), body `{"gameSlug":"blood-slayers"}`,
+  requiring the anonymous session cookies (`anonymousUserId`/`aut`) the page
+  load sets — answering `{playKey, userId, gameBuild, gameCloud, anonymousUser}`.
+  The player iframe then requests
+  `/embed?entrypoint=index.html&engine=CUSTOM&pk=<playKey>&sdkconfig=…`,
   which answers an embed shell embedding
   `window.__WAVEDASH_GAME__ = {gcid, gbid, swPath, gameplayJwt, sessionToken}`
   (JWT ≈ 1 h). `sw-embed.js` — a service worker registered at the host's root
@@ -192,6 +200,49 @@ Refreshing means `node tools/capture.mjs` into a clean tree, then
 `node tools/make-manifest.mjs . .upstream/manifest.json`, then re-deriving
 (`node tools/derive.mjs` + `node tools/audit.js`).
 
+**Extraction rule (re-pointed 2026-11-01).** The probe reads the build from the
+current markup/API, in this order, and fails loudly (exit 2, naming the missing
+field) if any step's shape changed:
+
+1. `GET https://wavedash.com/games/blood-slayers` — read `gameCloud._id` /
+   `gameBuild._id` (`engine`, `entrypoint`) out of the SvelteKit SSR
+   `kit.start()` data blob, and keep the `anonymousUserId` / `aut` session
+   cookies it sets. If the blob no longer carries `gameCloud`/`gameBuild`, the
+   probe stops: the platform markup changed again.
+2. `POST /embed/api/game-launch` (falling back to `/api/game-launch`) with
+   `{"gameSlug":"blood-slayers"}` and those cookies — this is the endpoint the
+   player itself calls — and read `playKey`, `userId`, `gameBuild`, `gameCloud`.
+   A non-200 (e.g. 403 `Gameplay requires a user` when the cookie is missing)
+   or a response without those fields stops the probe. The launch build must
+   match the SSR build, else the page and the player disagree on the live build
+   and the probe stops rather than guess.
+3. `GET https://<gameCloudId>-<fnv32(userId)>-<fnv32(gameBuild._id)>.builds.wavedashcdn.com/embed?entrypoint=…&engine=…&pk=<playKey>&sdkconfig=…`
+   → `gameplayJwt`; then every manifest file is fetched with
+   `Authorization: Bearer <jwt>` + `X-Wd-Sw: jwt` and sha256-compared.
+
+**Failure mode.** The old rule (`playKey:"…"` in the page HTML) silently
+disappeared on 2026-11-01: the origin became a portal and the field moved behind
+the launch API. The probe must therefore never treat a missing bootstrap as
+"nothing to compare" — every shape dependency is guarded and a broken shape is a
+loud exit 2, not an "up to date" report. A probe that cannot resolve the build
+must say so.
+
+### 2026-11-01 probe re-point
+
+The origin switched to a SvelteKit portal and stopped server-rendering
+`playKey`, so `tools/update.mjs` could no longer find the game build (the
+extraction regex matched nothing and the probe exited 2 on every run). The probe
+was re-pointed to the launch API (above), strictly read-only — it writes nothing
+and creates no `*.tmp`. Re-probed the same day: **the game build is unchanged**
+(`fnv32(gameBuild._id)` is still `0a5301b2`, the captured build 20 / v1.1.1) and
+`index.html`, `olbaid.js`, `sw-embed.js` and all 410 assets hash identically —
+but **three platform embed-runtime files drifted** (`embed` 1776→1776 B but a
+new `sessionToken` field and a bumped `?v=` asset version; `embed.css`
+9831→9884 B; `embed.js` 732728→766951 B). That drift is **real and
+unrefreshed**: refreshing is out of scope for this probe-fix lane (PLAN §3 —
+refresh needs a clean tree, a new manifest and a re-derive), so this mirror's
+drift probe reports `3 changed` until a refresh lane is run.
+
 ### 2026-10-13 derivation note
 
 Both derived layers are in place, cut from the recorded capture (capture bytes
@@ -252,6 +303,9 @@ untouched — `node tools/verify.mjs` re-hashes all 414 files):
   (netstat). Boot: the mirror renders and plays offline — character creation,
   the Forgotten Ossuary, combat with risen skeletons, death/resurrect; cover
   and boot evidence in `docs/`. Rebuild with `node tools/derive.mjs`.
+- (The `update.mjs` line above is the **2026-10-13** result; the origin changed
+  shape on 2026-11-01 and the probe now reports `3 changed` — see
+  *Updating from upstream* for the re-pointed rule and the drift.)
 
 ## Mirror conventions
 
@@ -264,7 +318,9 @@ untouched — `node tools/verify.mjs` re-hashes all 414 files):
 - **Provenance** — `.upstream/manifest.json` records sha256 for each captured
   artifact, and `tools/verify.mjs` re-checks it.
 - **Drift** — `tools/update.mjs` is read-only: it reports what changed upstream
-  and never rewrites the capture.
+  and never rewrites the capture. It resolves the build from the current markup
+  and the launch API; if either changes shape it exits 2 with the missing field
+  named rather than reporting a false "up to date".
 
 ## Fleet status
 
@@ -272,5 +328,5 @@ untouched — `node tools/verify.mjs` re-hashes all 414 files):
 <!-- cols: cls=classification · ver=verify 0 problems · upd=drift probe · man=manifest · rdbl=readable re-derived · src=reversed src · boot=boot test · top=offline-mirror topic · tag=backup tag · staged=staged not committed -->
 | # | repo | cls | ver | upd | man | rdbl | src | boot | top | tag | staged |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 311 | blood-slayers | mirror | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — |
+| 311 | blood-slayers | mirror | ✓ | drift 2026-11-01 (probe re-pointed to the launch API; platform embed runtime: embed/embed.css/embed.js; game build 0a5301b2 unchanged) | ✓ | ✓ | ✓ | ✓ | ✓ | — | — |
 <!-- mirror-status:end -->
